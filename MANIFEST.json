@@ -1,0 +1,66 @@
+{
+  "name": "technical-blog-work-agent",
+  "version": "0.3.0",
+  "environment": {
+    "hardware": "Apple M5 Max",
+    "memory": "128GB",
+    "os": "macOS",
+    "python": "3.14.6",
+    "package_manager": "uv",
+    "services": "Docker Compose",
+    "architecture": "arm64",
+    "gpu_backend_priority": [
+      "MPS/Metal/MLX",
+      "CPU",
+      "x86_64 emulation only if required"
+    ]
+  },
+  "skills": [
+    "technical-research",
+    "hypothesis-design",
+    "experiment-design",
+    "environment-build",
+    "experiment-execution",
+    "result-analysis",
+    "discussion",
+    "article-drafting",
+    "visual-evidence",
+    "quality-review",
+    "failure-recovery-replan"
+  ],
+  "resources": [
+    "environment-policy.md",
+    "source-policy.md",
+    "google-search-quality-policy.md",
+    "eeat-quality-policy.md",
+    "evidence-gate.md",
+    "project-layout.md",
+    "project-state-template.md",
+    "qiita-style-guide.md",
+    "article-template.md",
+    "experiment-plan-template.md",
+    "evidence-record-template.md",
+    "review-rubric.md",
+    "content-mlops-concept.md",
+    "versioning-policy.md",
+    "evaluation-policy.md",
+    "production-metrics-policy.md"
+  ],
+  "project_state": "PROJECT_STATE.md",
+  "article_gate": "evidence-gate.md",
+  "quality_score": {
+    "criteria": 9,
+    "max_score": 18
+  },
+  "content_mlops": {
+    "source_of_truth": "GitHub",
+    "evaluation_system": "MLflow",
+    "offline_and_production_metrics_separated": true,
+    "mvp_steps": [
+      "github-versioning",
+      "mlflow-offline-evaluation",
+      "fixed-evaluation-dataset",
+      "human-review"
+    ]
+  }
+}
