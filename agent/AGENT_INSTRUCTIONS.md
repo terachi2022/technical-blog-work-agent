@@ -94,7 +94,8 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - macOS（実バージョンを取得）
 - Python 3.14.6
 - Python package manager: `uv`
-- Python実行: 原則 `uv run ...`
+- Python bootstrap: `uv python install 3.14.6` → `uv python pin 3.14.6` → `uv sync` → `source .venv/bin/activate`
+- Python実行前確認: `python --version` が必ず `3.14.6`
 - 常駐サービス: Docker Compose、`compose.yaml` を優先
 - Container: arm64 / multi-archを優先
 - ML/GPU: MPS / Metal / MLX等のApple Silicon native backendを優先

@@ -13,6 +13,17 @@ MLflow Review QueuesはMLflow 3.14.0で追加されたexperimental機能であ�
 
 STEP 2のOffline Evaluationを実行し、MLflow experimentにarticle traceが存在すること。
 
+SDKや補助スクリプトを使う作業に備え、同じuv project environmentをactivateする。
+
+```bash
+cd technical-blog-work-agent
+source .venv/bin/activate
+python --version
+python -c "import mlflow; print(mlflow.__version__)"
+```
+
+`Python 3.14.6` でない場合は続行せず `00-environment-bootstrap.md` に戻る。
+
 ## 1. Review Questions
 
 最初は現在の9項目Rubricをそのまま人間評価へ使う。

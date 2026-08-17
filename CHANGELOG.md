@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1
+
+- uv管理ルールを修正し、Python本体を `uv python install 3.14.6` で導入する必須手順を追加
+- `uv python pin 3.14.6`、`uv sync`、`.venv` activate、`python --version`確認を標準化
+- `docs/implementation/00-environment-bootstrap.md` を追加
+- STEP 1〜4をactivate済みPython 3.14.6環境前提へ修正
+- Agent / Environment Policy / Environment Build Skill / READMEの実行規則を統一
+- validatorにPython bootstrap手順の欠落検知を追加
+
 ## 0.3.0
 
 - Content MLOps conceptをAgentへ追加

@@ -6,6 +6,17 @@ Agent v0.3とv0.4を**同じ問題**で評価できるようにする。
 
 Evaluation DatasetはAgent品質の「定点観測用テストセット」として扱う。
 
+## Prerequisite — STEP 1のuv環境を使用
+
+```bash
+cd technical-blog-work-agent
+source .venv/bin/activate
+python --version
+```
+
+必ず `Python 3.14.6` であることを確認する。
+異なる場合は続行せず `00-environment-bootstrap.md` に戻る。
+
 ## Source of Truth
 
 Dataset原本はGitHubで管理する。
@@ -43,7 +54,7 @@ MLflow serverが起動している状態で:
 ```bash
 export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 
-uv run python evals/datasets/register_dataset.py \
+python evals/datasets/register_dataset.py \
   --file evals/datasets/golden-set-v1.jsonl \
   --name technical-blog-golden-v1 \
   --version 1.0.0

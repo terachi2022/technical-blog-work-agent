@@ -7,6 +7,24 @@ Agentのversionごとに「記事品質が上がったか」をMLflowで比較�
 MVPではChatGPT WorkをPythonから自動実行しない。
 ChatGPT Workで生成済みの `article.md` をMLflowへ渡し、code-based scorerと既存Quality Review結果を記録する。
 
+## 0. Prerequisite — uv環境をactivate
+
+STEP 1で作成したproject environmentを使用する。
+
+```bash
+cd technical-blog-work-agent
+source .venv/bin/activate
+python --version
+```
+
+期待値:
+
+```text
+Python 3.14.6
+```
+
+`.venv` が存在しない、またはPython 3.14.6でない場合はSTEP 2を続行せず、`00-environment-bootstrap.md` を実行する。
+
 ## 1. MLflow ServerをDocker Composeで起動
 
 ```bash
@@ -36,12 +54,26 @@ MLflow Evaluation DatasetはSQL backendを要求するため、FileStoreでは�
 
 ## 2. Client dependencyをuvで追加
 
-Agent repository rootで:
+Agent repository rootで、activate済み状態を確認する。
+
+```bash
+python --version
+```
+
+MLflow dependencyをuvで追加する。
 
 ```bash
 uv add "mlflow==3.15.1"
 uv sync
 ```
+
+`uv sync` 後もactivate状態を確認する。
+
+```bash
+source .venv/bin/activate
+python -c "import mlflow; print(mlflow.__version__)"
+```
+
 
 `pyproject.toml` と `uv.lock` の変更をGit管理する。
 
@@ -65,7 +97,7 @@ Quality Review Skillは `results/quality-review.json` も生成する。
 ## 5. Offline Evaluationを実行
 
 ```bash
-uv run python evals/run_offline_eval.py \
+python evals/run_offline_eval.py \
   --project-dir /path/to/project \
   --article-id 20260818-mlflow-m5max-01
 ```
