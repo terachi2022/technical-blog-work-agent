@@ -59,7 +59,7 @@ YYYYMMDD-<short-slug>-NN
 例:
 
 ```text
-20260818-mlflow-m5max-01
+20260818-mlflow-m5max-001
 ```
 
 ## Release flow

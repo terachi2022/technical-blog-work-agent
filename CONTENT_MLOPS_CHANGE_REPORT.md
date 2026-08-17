@@ -70,3 +70,7 @@ Content MLOps is added after and around the existing flow; it does not weaken:
 - failure / trial-and-error preservation
 - Qiita Markdown requirements
 - project resume / source-of-truth rules
+
+## v0.3.1 — uv/Python bootstrap correction
+
+The implementation guides now require Python 3.14.6 itself to be installed and pinned by uv before any Python-based validation or evaluation. Explicit `.venv` activation is the standard human-run workflow. See `UV_BOOTSTRAP_CORRECTION_REPORT.md`.

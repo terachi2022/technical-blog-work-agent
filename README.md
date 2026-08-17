@@ -74,24 +74,54 @@ resources/
 
 ## Project state
 
-新規Projectでは `resources/project-state-template.md` を元に `PROJECT_STATE.md` を作成する。
+記事ProjectはAgent Repositoryの外側へ置く。標準は次の構成。
+
+```text
+~/dev/
+├── technical-blog-work-agent/
+└── technical-blog-projects/
+```
+
+新規Projectは `tools/init_article_project.py` で初期化し、`resources/project-state-template.md` を元に `PROJECT_STATE.md` を作成する。
 再開時はこのファイルと実成果物を確認し、完了済みPhaseを不要に繰り返さない。
 
-## Local validation
+## Initial Python bootstrap
+
+最初にuvでPython 3.14.6そのものを導入し、project environmentを作る。
 
 ```bash
 cd technical-blog-work-agent
-uv run python tools/validate_skills.py
+uv python install 3.14.6
+uv python pin 3.14.6
+uv sync
+source .venv/bin/activate
+python --version
+```
+
+期待値:
+
+```text
+Python 3.14.6
+```
+
+詳細は `docs/implementation/00-environment-bootstrap.md` を参照する。
+
+## Local validation
+
+activate済み環境で:
+
+```bash
+python tools/validate_skills.py
 ```
 
 期待結果:
 
 ```text
-OK: 11 skills and package policies validated
+OK: 11 skills, package policies, and Content MLOps files validated
 ```
 
 
-## Content MLOps extension (v0.3.0)
+## Content MLOps extension (v0.3.2)
 
 ```text
 GitHub = what changed
@@ -103,7 +133,9 @@ Offline QualityとProduction Performanceは分離する。
 
 Implementation order:
 
+0. `docs/implementation/00-environment-bootstrap.md`
 1. `docs/implementation/01-github-versioning.md`
+1.5. `docs/implementation/01.5-baseline-article-generation.md`
 2. `docs/implementation/02-mlflow-offline-evaluation.md`
 3. `docs/implementation/03-fixed-evaluation-dataset.md`
 4. `docs/implementation/04-human-review.md`

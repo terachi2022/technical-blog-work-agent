@@ -187,7 +187,7 @@ python tools/version_snapshot.py \
 
 ```json
 {
-  "agent_version": "0.3.1",
+  "agent_version": "0.3.2",
   "git_commit": "...",
   "git_branch": "main",
   "git_dirty": false,
@@ -198,6 +198,8 @@ python tools/version_snapshot.py \
 ```
 
 正式なbaseline評価は `git_dirty=false` を原則とする。
+
+記事ProjectはこのRepository内に作らず、STEP 1.5で `~/dev/technical-blog-projects/` 等の外部ディレクトリへ作成する。
 
 ---
 
@@ -231,7 +233,7 @@ git commit -m "feat: add offline evaluation workflow"
 固定Datasetで評価し、採用するversionにtagを付ける。
 
 ```bash
-git tag -a v0.3.1 -m "Content MLOps baseline"
+git tag -a v0.3.2 -m "Content MLOps baseline"
 git push origin main --tags
 ```
 
@@ -317,3 +319,9 @@ python --version
 - GitHub Releases: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
 - Protected branches: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
 - MLflow Git version tracking: https://mlflow.org/docs/latest/genai/version-tracking/track-application-versions-with-mlflow/
+
+---
+
+# Next
+
+GitHub baselineを固定したら、**STEP 2へ直接進まず** `01.5-baseline-article-generation.md` を実行して実 `article.md` を作成する。

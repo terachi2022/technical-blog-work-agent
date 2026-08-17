@@ -27,7 +27,7 @@ uname -a
 uname -m
 system_profiler SPHardwareDataType
 uv --version
-uv run python --version
+python --version
 docker version
 docker compose version
 ```
@@ -37,17 +37,59 @@ Dockerを使わない場合も同様。
 
 ## Python
 
-Pythonを使う検証では原則:
+Pythonを使う検証では、**Python本体の導入から `uv` で管理する**。
+人間向けの標準bootstrapは以下とする。
 
 ```bash
-uv init
+# uvが未導入の場合のみ
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Python本体をuvで導入
+uv python install 3.14.6
+
+# Projectで使用するPythonを固定
 uv python pin 3.14.6
-uv add <package>
+
+# .venv / uv.lock / dependenciesを同期
 uv sync
-uv run python <script.py>
+
+# macOS / zsh
+source .venv/bin/activate
+
+# 必ず確認
+which python
+python --version
 ```
 
-既存プロジェクトでは `uv sync` と `uv run` を使う。
+期待するPythonは必ず:
+
+```text
+Python 3.14.6
+```
+
+`pyproject.toml` は次を維持する。
+
+```toml
+requires-python = "==3.14.6"
+```
+
+依存パッケージ追加は:
+
+```bash
+uv add <package>
+uv sync
+```
+
+既存projectをcloneした後も、Python 3.14.6がuv管理下にない可能性があるため、初回は `uv python install 3.14.6` を省略しない。
+新しいshellでは `.venv` を再activateする。
+
+```bash
+source .venv/bin/activate
+python --version
+```
+
+このプロジェクトの人間向け手順では**明示的activateを標準**とする。`uv run` 自体は禁止しないが、activate手順を省略する理由にはしない。
+
 `pyproject.toml` と `uv.lock` を再現性の根拠として残す。
 
 理由なく以下へ変更しない。

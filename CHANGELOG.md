@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+
+- STEP 1.5 `Baseline Article Generation` を追加し、実際の `article.md` を生成する工程を明文化
+- 記事ProjectをAgent Repositoryの外側 `~/dev/technical-blog-projects/` に分離する標準構成へ変更
+- `agent/START_PROMPT.md` をArticle ID / Project Directory / Agent Version / Git Commit / Phase成果物まで指定する実運用版へ刷新
+- `tools/init_article_project.py` を追加し、外部記事Projectの初期化と `PROJECT_STATE.md` 生成を再現可能にした
+- STEP 2からAgent Repository内 `work/` 前提を削除し、外部Projectの `article.md` を直接評価する方式へ変更
+- Agent / Project Layout / README / Roadmap / Evaluation Dataset手順を同じProject境界へ統一
+- validatorにSTEP 1.5、START_PROMPT、外部Project分離、`work/`再混入の検査を追加
+
 ## 0.3.1
 
 - uv管理ルールを修正し、Python本体を `uv python install 3.14.6` で導入する必須手順を追加

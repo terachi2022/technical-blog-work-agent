@@ -1,6 +1,6 @@
 {
   "name": "technical-blog-work-agent",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "environment": {
     "hardware": "Apple M5 Max",
     "memory": "128GB",
@@ -58,9 +58,11 @@
     "offline_and_production_metrics_separated": true,
     "mvp_steps": [
       "github-versioning",
+      "baseline-article-generation",
       "mlflow-offline-evaluation",
       "fixed-evaluation-dataset",
       "human-review"
-    ]
+    ],
+    "environment_bootstrap": "docs/implementation/00-environment-bootstrap.md"
   }
 }

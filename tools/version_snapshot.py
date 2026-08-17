@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -29,6 +30,8 @@ def main() -> None:
     manifest = json.loads((ROOT / "MANIFEST.json").read_text(encoding="utf-8"))
     status = git("status", "--porcelain")
 
+    uv_version = subprocess.run(["uv", "--version"], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
+
     payload = {
         "article_id": args.article_id,
         "agent_version": manifest["version"],
@@ -36,6 +39,9 @@ def main() -> None:
         "git_branch": git("branch", "--show-current"),
         "git_dirty": bool(status),
         "git_describe": git("describe", "--tags", "--always", "--dirty"),
+        "python_version": sys.version.split()[0],
+        "python_executable": sys.executable,
+        "uv_version": uv_version,
         "captured_at_utc": datetime.now(timezone.utc).isoformat(),
     }
 

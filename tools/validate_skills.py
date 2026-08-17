@@ -114,7 +114,7 @@ for rel, terms in specific.items():
 
 # Resource content checks
 resource_terms = {
-    "environment-policy.md": ["Apple Silicon / arm64", "Python          : 3.14.6", "Docker Compose", "linux/arm64", "MPS / Metal / MLX", "torch.backends.mps.is_available"],
+    "environment-policy.md": ["Apple Silicon / arm64", "Python          : 3.14.6", "Docker Compose", "linux/arm64", "MPS / Metal / MLX", "torch.backends.mps.is_available", "uv python install 3.14.6", "uv python pin 3.14.6", "source .venv/bin/activate"],
     "evidence-gate.md": ["Research Question", "Missing Evidence", "article-drafting", "Anti-fabrication"],
     "project-layout.md": ["PROJECT_STATE.md", "research.md", "experiment-log.md", "article.md", "Resume rule"],
     "review-rubric.md": ["Original Value Gate", "Experience", "Clarity", "Total: /18"],
@@ -129,7 +129,9 @@ for name, terms in resource_terms.items():
 
 # Content MLOps implementation checks
 required_paths = [
+    ROOT / "docs" / "implementation" / "00-environment-bootstrap.md",
     ROOT / "docs" / "implementation" / "01-github-versioning.md",
+    ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md",
     ROOT / "docs" / "implementation" / "02-mlflow-offline-evaluation.md",
     ROOT / "docs" / "implementation" / "03-fixed-evaluation-dataset.md",
     ROOT / "docs" / "implementation" / "04-human-review.md",
@@ -137,10 +139,76 @@ required_paths = [
     ROOT / "evals" / "datasets" / "golden-set-v1.jsonl",
     ROOT / "evals" / "run_offline_eval.py",
     ROOT / "tools" / "version_snapshot.py",
+    ROOT / "tools" / "init_article_project.py",
 ]
 for p in required_paths:
     if not p.is_file():
         errors.append(f"missing Content MLOps file: {p.relative_to(ROOT)}")
+
+# Mandatory uv/Python bootstrap checks
+bootstrap = ROOT / "docs" / "implementation" / "00-environment-bootstrap.md"
+if bootstrap.is_file():
+    bt = bootstrap.read_text(encoding="utf-8")
+    for term in [
+        "uv python install 3.14.6",
+        "uv python pin 3.14.6",
+        "uv sync",
+        "source .venv/bin/activate",
+        "python --version",
+    ]:
+        if term not in bt:
+            errors.append(f"00-environment-bootstrap.md: missing required bootstrap term {term!r}")
+
+for guide in [
+    ROOT / "docs" / "implementation" / "01-github-versioning.md",
+    ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md",
+    ROOT / "docs" / "implementation" / "02-mlflow-offline-evaluation.md",
+    ROOT / "docs" / "implementation" / "03-fixed-evaluation-dataset.md",
+    ROOT / "docs" / "implementation" / "04-human-review.md",
+]:
+    if guide.is_file():
+        gt = guide.read_text(encoding="utf-8")
+        if "source .venv/bin/activate" not in gt:
+            errors.append(f"{guide.relative_to(ROOT)}: missing explicit virtual environment activation")
+
+step1 = ROOT / "docs" / "implementation" / "01-github-versioning.md"
+if step1.is_file():
+    st = step1.read_text(encoding="utf-8")
+    for term in ["uv python install 3.14.6", "uv python pin 3.14.6", "uv sync"]:
+        if term not in st:
+            errors.append(f"docs/implementation/01-github-versioning.md: missing {term!r}")
+
+# Baseline article generation / project-boundary checks
+step15 = ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md"
+if step15.is_file():
+    st = step15.read_text(encoding="utf-8")
+    for term in ["technical-blog-projects", "init_article_project.py", "START_PROMPT.md", "Evidence Gate", "article.md", "version-snapshot.json"]:
+        if term not in st:
+            errors.append(f"01.5-baseline-article-generation.md: missing {term!r}")
+
+start_prompt = ROOT / "agent" / "START_PROMPT.md"
+if start_prompt.is_file():
+    spt = start_prompt.read_text(encoding="utf-8")
+    for term in ["Article ID", "Project Directory", "Agent Repository", "Evidence Gate", "article.md", "quality-review.json"]:
+        if term not in spt:
+            errors.append(f"agent/START_PROMPT.md: missing operational field {term!r}")
+else:
+    errors.append("missing agent/START_PROMPT.md")
+
+layout = RES / "project-layout.md"
+if layout.is_file():
+    lt = layout.read_text(encoding="utf-8")
+    for term in ["Agent Repositoryと記事Projectは分離", "technical-blog-projects", "init_article_project.py", "空ファイル"]:
+        if term not in lt:
+            errors.append(f"resources/project-layout.md: missing project-boundary term {term!r}")
+
+step2 = ROOT / "docs" / "implementation" / "02-mlflow-offline-evaluation.md"
+if step2.is_file():
+    s2 = step2.read_text(encoding="utf-8")
+    if "01.5-baseline-article-generation.md" not in s2:
+        errors.append("02-mlflow-offline-evaluation.md: must point to STEP 1.5")
+    if "work/20260818" in s2 or "$(pwd)/work/" in s2:
+        errors.append("02-mlflow-offline-evaluation.md: article project must not live under Agent repository work/")
 
 if count == 0:
     errors.append("No SKILL.md files found")

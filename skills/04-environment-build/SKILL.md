@@ -24,7 +24,8 @@ description: Apple M5 Max/macOS/Python 3.14.6/uvを固定条件として技術�
 - OS: macOS
 - Python: 3.14.6
 - Pythonパッケージ管理: `uv`
-- Python実行: 原則 `uv run ...`
+- Python bootstrap: `uv python install 3.14.6` → `uv python pin 3.14.6` → `uv sync` → `source .venv/bin/activate`
+- Python実行前: `python --version` が3.14.6であることを確認
 - 仮想環境・依存関係: `uv` で管理する
 - 常駐サービス、DB、Web UI、補助サーバーが必要な場合: `docker compose` で構成する
 - Apple SiliconでGPUアクセラレーションが使える場合: MPS/Metalを優先する
@@ -38,13 +39,16 @@ description: Apple M5 Max/macOS/Python 3.14.6/uvを固定条件として技術�
 ## Workflow
 
 1. `environment-policy.md` に従い、macOS、arm64、M5 Max、Python/uv、Docker/Compose等の実値を取得して記録する。
-2. Pythonプロジェクトなら `uv` プロジェクトを使用する。
-3. 依存関係は `uv add` / `uv sync` で管理する。
-4. 常駐サービスが必要なら `compose.yaml` を作り、arm64またはmulti-archイメージを優先する。x86_64エミュレーションを使う場合は性能上の制約を記録する。
-5. 起動後にhealth/statusを確認する。
-6. 重要設定をファイルとして保存する。
-7. 最小のsmoke testを実施する。
-8. 実験開始前の状態を記録する。
+2. Pythonプロジェクトなら `uv python install 3.14.6` でPython本体をuv管理下へ導入する。
+3. `uv python pin 3.14.6` でproject Pythonを固定する。
+4. `uv sync` で `.venv` とlock状態を同期する。
+5. `source .venv/bin/activate` で明示的にactivateし、`python --version` が3.14.6であることを確認する。
+6. 依存関係は `uv add` / `uv sync` で管理する。
+7. 常駐サービスが必要なら `compose.yaml` を作り、arm64またはmulti-archイメージを優先する。x86_64エミュレーションを使う場合は性能上の制約を記録する。
+8. 起動後にhealth/statusを確認する。
+9. 重要設定をファイルとして保存する。
+10. 最小のsmoke testを実施する。
+11. 実験開始前の状態を記録する。
 
 ## Do not
 

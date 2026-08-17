@@ -79,7 +79,8 @@ golden-set-v2.jsonl  -> 新しい評価方針
 
 1. caseの `inputs` をChatGPT Work Agentへ渡す
 2. Agentの通常フローを実行する
-3. `article.md` とProject artifactsを保存する
+3. 各caseを `tools/init_article_project.py` でAgent Repository外部のArticle Projectとして初期化する
+4. `agent/START_PROMPT.md` を使いPhase 1〜11を実行して、実 `article.md` とProject artifactsを保存する
 4. STEP 2のOffline Evaluatorへ渡す
 5. case ID / dataset versionをMLflowへ記録する
 

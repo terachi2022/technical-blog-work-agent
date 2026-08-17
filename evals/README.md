@@ -13,4 +13,4 @@ evals/
 └── run_offline_eval.py
 ```
 
-MVPではChatGPT Workで生成した `article.md` を `run_offline_eval.py` へ渡す半自動方式とする。
+MVPではSTEP 1.5でAgent Repository外部のArticle Projectへ生成した実 `article.md` を `run_offline_eval.py` へ渡す半自動方式とする。

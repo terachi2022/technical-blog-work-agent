@@ -31,7 +31,20 @@ def load_quality_review(project_dir: Path) -> dict:
     path = project_dir / "results" / "quality-review.json"
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    if path.stat().st_size == 0:
+        raise SystemExit(
+            "quality review is empty: "
+            f"{path}\n"
+            "Remove the empty file if Quality Review has not been run, "
+            "or generate a valid results/quality-review.json with the quality-review Skill."
+        )
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"invalid quality review JSON: {path}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise SystemExit(f"quality review must be a JSON object: {path}")
+    return data
 
 
 def main() -> None:
@@ -52,6 +65,13 @@ def main() -> None:
     article = args.project_dir / "article.md"
     if not article.is_file():
         raise SystemExit(f"article not found: {article}")
+    if not article.read_text(encoding="utf-8").strip():
+        raise SystemExit(
+            "article is empty: "
+            f"{article}\n"
+            "Use the real article.md produced by the article-drafting phase; "
+            "do not create an empty placeholder file for evaluation."
+        )
 
     manifest = json.loads((ROOT / "MANIFEST.json").read_text(encoding="utf-8"))
     git_dirty = bool(git("status", "--porcelain"))
