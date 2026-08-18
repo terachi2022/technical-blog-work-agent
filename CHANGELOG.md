@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Rubric 2.3で評価したarticle-v2.2のHuman Calibration v4 holdout labelを追加
+
 ## 0.6.0
 
 - 中核技術の定義、解決する課題、今回なぜ必要かをReader-visible Contractへ追加
