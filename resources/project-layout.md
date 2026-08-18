@@ -68,10 +68,13 @@ source .venv/bin/activate
 python tools/init_article_project.py \
   --projects-root ~/dev/technical-blog-projects \
   --article-id 20260818-mlflow-m5max-001 \
-  --topic "M5 Max環境でMLflowの公式チュートリアルを実行する"
+  --topic "M5 Max環境でMLflowの公式チュートリアルを実行する" \
+  --audience "MLflowを初めて使用するエンジニア"
 ```
 
-initializerはProject Directory、`PROJECT_STATE.md`、README、データ・結果・ログ・画像用ディレクトリだけを作る。
+initializerはProject Directory、`PROJECT_STATE.md`、README、データ・結果・ログ・画像用ディレクトリに加え、
+`results/version-snapshot.json` と実値入り `AGENT_TASK.md` を作る。
+Agent version / Git commit / branch / dirtyは `PROJECT_STATE.md` へ自動記録し、人間に転記させない。
 `research.md` や `article.md` を空ファイルとして先に作らない。
 
 ## Canonical artifacts

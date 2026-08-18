@@ -44,7 +44,8 @@ Human ReviewなしではLLM / machine評価の妥当性を確認できない。
 
 ChatGPT Work AgentをローカルPythonから自動呼び出すことはMVP要件にしない。
 
-STEP 1.5でArticle Projectを初期化し、ChatGPT Workへ `agent/START_PROMPT.md` を渡して半自動で `article.md` を生成する。
+STEP 1.5でArticle Projectを1コマンドで初期化し、Version identityと実値入り `AGENT_TASK.md` を自動生成する。
+利用者はそのタスクをChatGPT Workへ1回渡し、AgentがEvidence Gate PASS後に `article-drafting` を実行して `article.md` を保存する。
 STEP 2以降では、その成果物をローカルMLflow evaluatorへ渡す。
 
 ## Mandatory bootstrap

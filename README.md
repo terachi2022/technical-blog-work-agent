@@ -82,8 +82,10 @@ resources/
 └── technical-blog-projects/
 ```
 
-新規Projectは `tools/init_article_project.py` で初期化し、`resources/project-state-template.md` を元に `PROJECT_STATE.md` を作成する。
+新規Projectは `tools/init_article_project.py` で初期化する。initializerは `PROJECT_STATE.md`、Version Snapshot、実値入り `AGENT_TASK.md` を自動生成し、人間によるVersion情報の転記を不要にする。
 再開時はこのファイルと実成果物を確認し、完了済みPhaseを不要に繰り返さない。
+
+STEP 1.5は、生成された `AGENT_TASK.md` をAgentへ1回渡し、Evidence Gate PASS後に `article-drafting` を実行して実 `article.md` を保存する工程である。完了は `tools/verify_article_project.py` で検証する。
 
 ## Initial Python bootstrap
 

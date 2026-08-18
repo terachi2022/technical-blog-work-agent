@@ -140,6 +140,7 @@ required_paths = [
     ROOT / "evals" / "run_offline_eval.py",
     ROOT / "tools" / "version_snapshot.py",
     ROOT / "tools" / "init_article_project.py",
+    ROOT / "tools" / "verify_article_project.py",
 ]
 for p in required_paths:
     if not p.is_file():
@@ -182,14 +183,14 @@ if step1.is_file():
 step15 = ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md"
 if step15.is_file():
     st = step15.read_text(encoding="utf-8")
-    for term in ["technical-blog-projects", "init_article_project.py", "START_PROMPT.md", "Evidence Gate", "article.md", "version-snapshot.json"]:
+    for term in ["technical-blog-projects", "init_article_project.py", "AGENT_TASK.md", "Evidence Gate", "article-drafting", "article.md", "version-snapshot.json", "verify_article_project.py", "手作業で転記しない"]:
         if term not in st:
             errors.append(f"01.5-baseline-article-generation.md: missing {term!r}")
 
 start_prompt = ROOT / "agent" / "START_PROMPT.md"
 if start_prompt.is_file():
     spt = start_prompt.read_text(encoding="utf-8")
-    for term in ["Article ID", "Project Directory", "Agent Repository", "Evidence Gate", "article.md", "quality-review.json"]:
+    for term in ["{{ARTICLE_ID}}", "{{PROJECT_DIR}}", "{{AGENT_REPOSITORY}}", "{{TOPIC}}", "{{AUDIENCE}}", "Evidence Gate", "article-drafting", "article.md", "quality-review.json", "人間に再入力・転記させず"]:
         if term not in spt:
             errors.append(f"agent/START_PROMPT.md: missing operational field {term!r}")
 else:
@@ -198,7 +199,7 @@ else:
 layout = RES / "project-layout.md"
 if layout.is_file():
     lt = layout.read_text(encoding="utf-8")
-    for term in ["Agent Repositoryと記事Projectは分離", "technical-blog-projects", "init_article_project.py", "空ファイル"]:
+    for term in ["Agent Repositoryと記事Projectは分離", "technical-blog-projects", "init_article_project.py", "AGENT_TASK.md", "自動記録", "空ファイル"]:
         if term not in lt:
             errors.append(f"resources/project-layout.md: missing project-boundary term {term!r}")
 

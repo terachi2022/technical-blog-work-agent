@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- STEP 1.5を将来工程の説明から実行可能なBaseline Article Generation手順へ再構成
+- Project初期化時にVersion Snapshot保存、`PROJECT_STATE.md`更新、実値入り`AGENT_TASK.md`生成を自動化
+- Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
+- `tools/verify_article_project.py`を追加し、記事とCanonical Evidenceの存在・内容を機械検証
+- 人間によるAgent version / Git commit / branch / dirtyの転記を廃止
+
 ## 0.3.2
 
 - STEP 1.5 `Baseline Article Generation` を追加し、実際の `article.md` を生成する工程を明文化

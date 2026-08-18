@@ -19,6 +19,7 @@
 新規Article Projectでは、最初に **Article ID / Project Directory / Agent Repository** を明確にする。
 記事Projectは原則Agent Repositoryの外側（例: `~/dev/technical-blog-projects/<article-id>/`）に置き、Agent Repository内へ `work/` 等の作業Projectを作らない。
 Project Directoryが未初期化なら `project-layout.md` と `tools/init_article_project.py` の標準構成に従う。
+initializerがVersion identityと実値入り `AGENT_TASK.md` を自動生成するため、人間へ情報転記を依頼しない。
 `article.md` はPhase 11まで空ファイルとして先に作らない。
 
 既存Projectがある場合:
@@ -83,6 +84,7 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - 各Phase完了時に `PROJECT_STATE.md` を更新する。
 - 全Article成果物は指定されたProject Directoryへ保存し、Agent Repositoryへ混在させない。
 - `article.md` はEvidence Gate PASS後のPhase 11でのみ実内容として生成し、空プレースホルダーを作らない。
+- Evidence Gate PASS後は説明で停止せず `article-drafting` を実行し、指定Project Directoryの `article.md` へ保存して非空を確認する。
 - Google Search品質に関する判断は `google-search-quality-policy.md` に従い、必要時に最新のGoogle公式ページを再確認する。
 - Agent / Skill / Resource / Scorer / Evaluation Dataset原本はGitHubをSource of Truthとする。
 - MLflowはGitHubの代替ではなく、Git commitと評価・Trace・Human Reviewを関連付ける。

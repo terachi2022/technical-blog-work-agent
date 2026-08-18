@@ -1,34 +1,31 @@
-# Technical Blog Agent — Operational Start Prompt
+# Technical Blog Agent — Executable Article Task Template
 
-以下をChatGPT WorkのTechnical Blog Agentへ渡し、**実際のArticle Projectを開始または再開する**。
-
----
-
-今回作成したTechnical Blog Agentを使用して、技術ブログProjectを開始してください。
+このファイルは `tools/init_article_project.py` が実値を埋め、Article Project内の
+`AGENT_TASK.md` として生成するテンプレートである。利用者にVersion情報を転記させない。
 
 ## Project identity
 
-- Article ID: `<例: 20260818-mlflow-m5max-001>`
-- Project Directory: `<例: /Users/tera/dev/technical-blog-projects/20260818-mlflow-m5max-001>`
-- Agent Repository: `<例: /Users/tera/dev/technical-blog-work-agent>`
+- Article ID: `{{ARTICLE_ID}}`
+- Project Directory: `{{PROJECT_DIR}}`
+- Agent Repository: `{{AGENT_REPOSITORY}}`
+- Model / runtime: `{{MODEL_RUNTIME}}`
 
-## テーマ
+## テーマと読者
 
-`<ここに検証テーマを書く>`
+- テーマ: `{{TOPIC}}`
+- 想定読者: `{{AUDIENCE}}`
 
-## 想定読者
+## 実行命令
 
-`<例: MLflowを初めて使うインフラエンジニア>`
+Technical Blog Agentとして、このProjectを開始または再開してください。
+計画の提示だけで停止せず、`PROJECT_STATE.md` と実ファイルから最初の未完了Phaseを判定し、
+ユーザーの承認または操作が本当に必要な箇所まで連続して実行してください。
 
-## 実行ルール
+記事成果物は必ずProject Directoryへ保存し、Agent Repositoryへ混在させないでください。
+Version identityは初期化時に `PROJECT_STATE.md` と
+`results/version-snapshot.json` へ記録済みです。人間に再入力・転記させず、内容を読み取ってください。
 
-1. 最初にProject Directoryの `PROJECT_STATE.md` を読み、新規Projectか再開か判定してください。
-2. Agent RepositoryとArticle Projectを混同しないでください。記事成果物は必ずProject Directoryへ保存してください。
-3. Agent Repositoryの `MANIFEST.json` とGit状態を確認し、Agent version / Git commit / Git branch / git_dirtyを `PROJECT_STATE.md` へ記録してください。
-4. 正式baselineとして利用する場合、Agent Repositoryは原則 `git_dirty=false` としてください。dirtyならその事実を報告し、勝手にclean扱いしないでください。
-5. 最初から `article.md` を作らず、以下のPhaseを順に実行してください。
-
-## Required phases
+## Required phases and outputs
 
 1. Research → `research.md`
 2. Research Question / Hypothesis → `hypothesis.md`
@@ -43,32 +40,37 @@
 11. Article Drafting → Evidence Gate PASS時のみ `article.md`
 12. Quality Review → `results/quality-review.json`
 
+各Phase終了時に `PROJECT_STATE.md` を更新してください。完了済みPhaseを理由なく再実行しないでください。
+
+## article.mdを実際に生成する手順
+
+Evidence GateがPASSしたら、説明だけで停止せず次を実行してください。
+
+1. Agent Repositoryの `skills/08-article-drafting/SKILL.md` を読み、そこに定義されたArticle Draftingを実行する。
+2. `research.md`、`hypothesis.md`、`experiment-plan.md`、`experiment-log.md`、`analysis.md`、`discussion.md`、Evidence Gate結果、画像・ログを入力にする。
+3. Qiita掲載用Markdownの実内容を `{{PROJECT_DIR}}/article.md` へ保存する。
+4. `article.md` が存在して空でないことを確認する。見出しだけのダミーや架空Evidenceは禁止する。
+5. `PROJECT_STATE.md` のPhase 11を `COMPLETED`、Content statusを `DRAFT` 以上へ更新する。
+6. 続けて `quality-review` を実行し、結果を `results/quality-review.json` へ保存する。
+
+Evidence GateがFAILなら `article.md` を作らず、Missing Evidenceと戻り先Phaseを記録して不足Phaseへ戻ってください。
+
 ## Evidence rules
 
-- 検証可能な内容は実際に検証してください。
-- 実際に確認していないログ、エラー、数値、グラフ、スクリーンショットを捏造しないでください。
-- 公式資料の記述、今回の実測結果、推測・考察を明確に分離してください。
-- 失敗は削除せず `experiment-log.md` と記事のTIPSへ残してください。
-- Evidence不足なら `article.md` を完成させず、不足Phaseへ戻してください。
+- 検証可能な内容は実際に検証する。
+- 未確認のログ、エラー、数値、グラフ、スクリーンショットを捏造しない。
+- 公式資料、今回の実測、推測・考察を分離する。
+- 失敗は削除せず `experiment-log.md` と記事のTIPSへ残す。
+- Python 3.14.6とuvを使用し、常駐サービスや複数サービスはDocker Composeで管理する。
+- Apple Silicon nativeのMPS / Metal / MLXを優先し、CUDA/NVIDIAを前提にしない。
 
-## Fixed environment
+## Completion condition
 
-- Apple M5 Max / 128GB
-- macOS / arm64
-- Python 3.14.6
-- Pythonはuvで管理
-- 常駐サービスはDocker Compose
-- MPS / Metal / MLX等Apple Silicon nativeを優先
-- CUDA/NVIDIAを前提にしない
-
-Pythonを使用する場合、Agent Repositoryまたは検証対象Projectで定義された環境ポリシーに従い、Python 3.14.6から勝手に変更しないでください。
-
-## Final deliverables
-
-最低限、Evidenceが揃った時点で次を作成してください。
+最低限、次が実内容を持って存在するまでSTEP 1.5は完了ではありません。
 
 ```text
 PROJECT_STATE.md
+results/version-snapshot.json
 research.md
 hypothesis.md
 experiment-plan.md
@@ -79,6 +81,4 @@ article.md
 results/quality-review.json
 ```
 
-`article.md` はQiita掲載可能なMarkdownとし、空ファイルやダミー内容で作成しないでください。
-
-各Phase終了時に `PROJECT_STATE.md` を更新し、終了時に「完了Phase / 未完了Phase / Missing Evidence / 次のアクション」を報告してください。
+終了時に、完了Phase、未完了Phase、Missing Evidence、生成した `article.md` の絶対パスを報告してください。
