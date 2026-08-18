@@ -39,12 +39,18 @@ class VerifyArticleProjectTest(unittest.TestCase):
                     "実測に基づく結論です。",
                     "## Research Question",
                     "何を確認できるか。",
+                    "## 仕組みとデータフロー",
+                    "clientからserverへEvidenceを送る。",
                     "## 検証環境",
                     "Apple M5 Max、Python 3.14.6。",
                     "## 結果",
                     "実行ログから確認した結果です。",
+                    "## 仮説と結果の対応",
+                    "| ID | 実測 | 判定 |\n|---|---|---|\n| H1 | exit 0 | SUPPORTED |",
                     "## 考察",
                     "結果と一次情報を分離して考察します。",
+                    "## 再現用成果物",
+                    "RepositoryとNotebookを公開します。",
                     "## 参考資料",
                     "公式資料を参照します。",
                     "検証手順とEvidenceの説明。" * 40,
@@ -63,13 +69,55 @@ class VerifyArticleProjectTest(unittest.TestCase):
                 json.dumps(snapshot), encoding="utf-8"
             )
             review = {
-                "publication_status": "READY",
-                "scores": {},
+                "schema_version": "2.0",
+                "review_mode": "article_only_then_evidence_verification",
+                "publishable": "PASS",
+                "quality_status": "QUALITY_READY",
+                "scores": {
+                    "experience": 2,
+                    "expertise": 2,
+                    "authoritativeness": 2,
+                    "trustworthiness": 2,
+                    "originality": 2,
+                    "reproducibility": 2,
+                    "usefulness": 2,
+                    "evidence": 2,
+                    "clarity": 2,
+                },
+                "score_evidence": {
+                    criterion: {
+                        "article_locations": ["## 結果"],
+                        "rationale": "テスト用の根拠",
+                        "gaps": [],
+                    }
+                    for criterion in [
+                        "experience",
+                        "expertise",
+                        "authoritativeness",
+                        "trustworthiness",
+                        "originality",
+                        "reproducibility",
+                        "usefulness",
+                        "evidence",
+                        "clarity",
+                    ]
+                },
                 "total": 18,
+                "reader_visible_gate": "PASS",
                 "blocking_issues": [],
             }
             (project_dir / "results" / "quality-review.json").write_text(
                 json.dumps(review), encoding="utf-8"
+            )
+            evidence_map = {
+                "schema_version": "1.0",
+                "article": "article.md",
+                "claims": [{"id": "C-01", "reader_visible": True}],
+                "hypotheses": [],
+                "reader_assets": [{"type": "repository", "url": "https://example.com"}],
+            }
+            (project_dir / "results" / "article-evidence-map.json").write_text(
+                json.dumps(evidence_map), encoding="utf-8"
             )
 
             result = subprocess.run(

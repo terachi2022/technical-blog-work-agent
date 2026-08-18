@@ -38,7 +38,7 @@ Version identityは初期化時に `PROJECT_STATE.md` と
 9. Visual Evidence → `images/` または具体的な撮影指示
 10. Evidence Gate → PASS / Missing Evidenceを記録
 11. Article Drafting → Evidence Gate PASS時のみ `article.md`
-12. Quality Review → `results/quality-review.json`
+12. Reader-visible Evidence Gate + Quality Review → `results/article-evidence-map.json` / `results/quality-review.json`
 
 各Phase終了時に `PROJECT_STATE.md` を更新してください。完了済みPhaseを理由なく再実行しないでください。
 
@@ -51,7 +51,8 @@ Evidence GateがPASSしたら、説明だけで停止せず次を実行してく
 3. Qiita掲載用Markdownの実内容を `{{PROJECT_DIR}}/article.md` へ保存する。
 4. `article.md` が存在して空でないことを確認する。見出しだけのダミーや架空Evidenceは禁止する。
 5. `PROJECT_STATE.md` のPhase 11を `COMPLETED`、Content statusを `DRAFT` 以上へ更新する。
-6. 続けて `quality-review` を実行し、結果を `results/quality-review.json` へ保存する。
+6. `article-quality-contract.md`を適用し、中心主張と記事位置、Evidence、読者向け成果物を`results/article-evidence-map.json`へ保存する。
+7. Reader-visible GateがPASSした場合だけ`quality-review`を実行し、結果を`results/quality-review.json`へ保存する。
 
 Evidence GateがFAILなら `article.md` を作らず、Missing Evidenceと戻り先Phaseを記録して不足Phaseへ戻ってください。
 
@@ -78,6 +79,7 @@ experiment-log.md
 analysis.md
 discussion.md
 article.md
+results/article-evidence-map.json
 results/quality-review.json
 ```
 

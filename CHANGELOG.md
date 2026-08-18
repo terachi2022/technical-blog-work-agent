@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Reader-visible Evidence Gateと`results/article-evidence-map.json`を追加
+- Publishableと`QUALITY_READY / NEEDS_REVISION / BLOCKED`を分離
+- 9項目Rubricへ観測可能な0/1/2アンカーとscore Evidenceを追加
+- Article-only Review後にProject Evidenceを検証する独立Review手順へ変更
+- 主張近傍リンク、仮説/結果表、実行/観測対応、Repository/Notebook、失敗過程のMachine checksを追加
+- 人間評価済みCalibration DatasetとBefore/After比較ツールを追加
+
 - STEP 1.5を将来工程の説明から実行可能なBaseline Article Generation手順へ再構成
 - Project初期化時にVersion Snapshot保存、`PROJECT_STATE.md`更新、実値入り`AGENT_TASK.md`生成を自動化
 - Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
@@ -13,6 +20,10 @@
 - 全文Review UIから11件のHuman Feedback記録とQueue完了更新を自動化
 - Human Review前にTrace全文Markdown表示と専用Review UIの末尾表示を別々に検証するPolicyを追加
 - Agent / Quality Review Skill / Resource / MemoryへHuman handoff gateと人間評価の責務境界を固定
+
+## 0.4.0
+
+- Technical Article Offline Qualityを人間評価で校正できる品質契約へ更新
 
 ## 0.3.2
 

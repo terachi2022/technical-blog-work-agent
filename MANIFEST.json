@@ -1,6 +1,6 @@
 {
   "name": "technical-blog-work-agent",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "environment": {
     "hardware": "Apple M5 Max",
     "memory": "128GB",
@@ -40,6 +40,7 @@
     "article-template.md",
     "experiment-plan-template.md",
     "evidence-record-template.md",
+    "article-quality-contract.md",
     "review-rubric.md",
     "content-mlops-concept.md",
     "versioning-policy.md",

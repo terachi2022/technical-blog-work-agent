@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from evals.scorers.article_scorers import SCORERS  # noqa: E402
+from evals.quality_review_contract import validate_quality_review  # noqa: E402
 
 
 @mlflow.trace(
@@ -72,6 +73,10 @@ def load_quality_review(project_dir: Path) -> dict:
         raise SystemExit(f"invalid quality review JSON: {path}: {exc}") from exc
     if not isinstance(data, dict):
         raise SystemExit(f"quality review must be a JSON object: {path}")
+    errors = validate_quality_review(data)
+    if errors:
+        formatted = "\n".join(f"- {error}" for error in errors)
+        raise SystemExit(f"invalid quality review contract: {path}\n{formatted}")
     return data
 
 
@@ -145,9 +150,12 @@ def main() -> None:
         scores = quality.get("scores", {})
         for key, value in scores.items():
             if isinstance(value, (int, float)):
-                mlflow.log_metric(f"human_or_agent_review.{key}", float(value))
+                mlflow.log_metric(f"agent_review.{key}", float(value))
         if isinstance(quality.get("total"), (int, float)):
-            mlflow.log_metric("human_or_agent_review.total", float(quality["total"]))
+            mlflow.log_metric("agent_review.total", float(quality["total"]))
+        for key in ["schema_version", "publishable", "quality_status"]:
+            if quality.get(key) is not None:
+                mlflow.set_tag(f"agent_review.{key}", str(quality[key]))
 
         with mlflow.tracing.context(tags=tags):
             mlflow.genai.evaluate(

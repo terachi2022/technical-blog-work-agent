@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from evals.quality_review_contract import validate_quality_review  # noqa: E402
 
 
 REQUIRED_TEXT_FILES = [
@@ -20,9 +27,12 @@ REQUIRED_TEXT_FILES = [
 ARTICLE_REQUIRED_HEADINGS = [
     "## TL;DR",
     "## Research Question",
+    "## 仕組みとデータフロー",
     "## 検証環境",
     "## 結果",
+    "## 仮説と結果の対応",
     "## 考察",
+    "## 再現用成果物",
     "## 参考資料",
 ]
 
@@ -75,9 +85,21 @@ def main() -> None:
 
     if args.require_quality_review:
         review = require_json(project_dir, "results/quality-review.json")
-        for field in ["publication_status", "scores", "total", "blocking_issues"]:
-            if field not in review:
-                raise SystemExit(f"ERROR: quality review is missing field: {field}")
+        errors = validate_quality_review(review)
+        if errors:
+            formatted = "\n".join(f"- {error}" for error in errors)
+            raise SystemExit(f"ERROR: invalid quality review contract:\n{formatted}")
+        evidence_map = require_json(project_dir, "results/article-evidence-map.json")
+        for field in ["schema_version", "article", "claims", "reader_assets"]:
+            if field not in evidence_map:
+                raise SystemExit(
+                    f"ERROR: article evidence map is missing field: {field}"
+                )
+        for field in ["claims", "reader_assets"]:
+            if not isinstance(evidence_map[field], list) or not evidence_map[field]:
+                raise SystemExit(
+                    f"ERROR: article evidence map field must be a non-empty list: {field}"
+                )
 
     print(f"OK: STEP 1.5 article project is complete: {project_dir}")
     print(project_dir / "article.md")

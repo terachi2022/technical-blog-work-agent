@@ -45,7 +45,7 @@ Projectの実験結果や進捗はMemoryではなくProject FilesをSource of Tr
 9. `visual-evidence`
 10. **Evidence Gate** (`evidence-gate.md`)
 11. `article-drafting`
-12. `quality-review`
+12. **Reader-visible Evidence Gate + `quality-review`** (`article-quality-contract.md`)
 
 ### Optional post-quality lifecycle
 
@@ -78,6 +78,10 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - コマンド・設定・コードは再現可能な単位で保存する。
 - 成功結果だけでなく失敗、試行錯誤、修正理由も記事価値として扱う。
 - 重要な技術主張には参照URLまたは実験証拠を紐づける。
+- Project内にEvidenceがあることと、記事読者がEvidenceへ到達できることを区別する。
+- Drafting後に`article-quality-contract.md`を適用し、中心主張、記事位置、Evidence、読者向け成果物を`results/article-evidence-map.json`へ保存する。
+- 重要な公式仕様は、末尾の参考資料だけでなく、支持する主張の近くへ一次情報リンクを置く。
+- WriterとReviewerを役割分離し、Reviewerは先に記事本文だけを評価してからProject Evidenceを検証する。
 - バージョン、取得日、実行環境を記録する。
 - 追加検証で結論が変わった場合は古い仮説を削除せず、`REJECTED / REVISED` として履歴を残す。
 - 不明点を想像で埋めない。調査または検証で解決できない場合は未確認と明記する。
@@ -132,6 +136,7 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - `experiment-plan-template.md`
 - `evidence-record-template.md`
 - `review-rubric.md`
+- `article-quality-contract.md`
 - `content-mlops-concept.md`
 - `versioning-policy.md`
 - `evaluation-policy.md`
@@ -146,7 +151,8 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - Technical Researcher: 一次情報調査、Research Question、既知問題
 - Experiment Designer / Runner: 仮説、実験設計、環境、実行、ログ・スクリーンショット
 - Analyst: データ整理、グラフ、統計、結果分析、考察、追加検証案
-- Technical Writer / E-E-A-T Reviewer: Qiita記事化、根拠追跡、再現性、E-E-A-T / 独自価値レビュー
+- Technical Writer: Qiita記事化、Reader-visible Evidence、再現性、読者向け成果物
+- Independent Quality Reviewer: 記事だけの評価、Evidence検証、Technical Article Offline Quality採点
 
 ## Human + AI boundary
 
@@ -170,6 +176,7 @@ ChatGPT Workは可能な範囲で以下を実施する。
 以下を満たすまで「記事完成」としない。
 
 - Evidence GateがPASS
+- Reader-visible Evidence GateがPASS
 - 主要主張に一次情報または実験証拠がある
 - 検証環境が明記されている
 - 再現コマンドまたはコードがある
@@ -179,9 +186,10 @@ ChatGPT Workは可能な範囲で以下を実施する。
 - 参照資料にリンクがある
 - Qiita掲載用Markdownとして読める
 - Original Value Gateを満たす
-- E-E-A-T / Quality score 9項目を評価済み
+- Technical Article Offline Quality score 9項目を根拠付きで評価済み
 - 品質レビューのBLOCKが0件
-- `PROJECT_STATE.md` が `READY` または人間判断待ちの適切な状態
+- `QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし
+- `PROJECT_STATE.md` が `QUALITY_READY` または人間判断待ちの適切な状態
 
 
 ## Content MLOps identity

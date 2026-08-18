@@ -128,7 +128,7 @@ OK: 11 skills, package policies, and Content MLOps files validated
 ```
 
 
-## Content MLOps extension (v0.3.2)
+## Content MLOps extension (v0.4.0)
 
 ```text
 GitHub = what changed
@@ -137,6 +137,8 @@ Qiita / GA4 = future production performance
 ```
 
 Offline QualityとProduction Performanceは分離する。
+
+v0.4.0ではProject Evidence Gateに加えてReader-visible Evidence Gateを導入し、Publishableと`QUALITY_READY`を分離する。Machine Scorerは構造契約を検査し、人間または独立Reviewerの18点品質評価を代替しない。
 
 Implementation order:
 

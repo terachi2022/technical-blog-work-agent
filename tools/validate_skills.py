@@ -22,6 +22,7 @@ required_resources = [
     "article-template.md",
     "experiment-plan-template.md",
     "evidence-record-template.md",
+    "article-quality-contract.md",
     "review-rubric.md",
     "content-mlops-concept.md",
     "versioning-policy.md",
@@ -48,7 +49,9 @@ agent_required_terms = [
     "project-layout.md",
     "article-drafting",
     "quality-review",
-    "E-E-A-T / Quality score",
+    "Technical Article Offline Quality score",
+    "Reader-visible Evidence Gate",
+    "article-quality-contract.md",
     "Content MLOps",
     "GitHub",
     "MLflow",
@@ -102,9 +105,9 @@ specific = {
     "01-technical-research/SKILL.md": ["source-policy.md", "google-search-quality-policy.md", "research.md"],
     "03-experiment-design/SKILL.md": ["experiment-plan-template.md", "独立変数", "従属変数", "交絡要因"],
     "04-environment-build/SKILL.md": ["arm64", "multi-arch", "MPS", "MLX"],
-    "06-result-analysis/SKILL.md": ["scripts/", "images/", "中央値", "analysis.md"],
-    "08-article-drafting/SKILL.md": ["evidence-gate.md", "TL;DR", "失敗したこと・TIPS", "article.md"],
-    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json", "human-review-policy.md", "OpenAI互換assistant message", "View full trace", "BLOCKED: REVIEW_SURFACE_INCOMPLETE"],
+    "06-result-analysis/SKILL.md": ["scripts/", "images/", "中央値", "analysis.md", "仮説と結果の対応"],
+    "08-article-drafting/SKILL.md": ["evidence-gate.md", "article-quality-contract.md", "TL;DR", "失敗したこと・TIPS", "article.md", "article-evidence-map.json"],
+    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "QUALITY_READY", "article_only_then_evidence_verification", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json", "human-review-policy.md", "OpenAI互換assistant message", "View full trace", "BLOCKED: REVIEW_SURFACE_INCOMPLETE"],
 }
 for rel, terms in specific.items():
     p = SKILLS / rel
@@ -122,8 +125,9 @@ resource_terms = {
     "evidence-gate.md": ["Research Question", "Missing Evidence", "article-drafting", "Anti-fabrication"],
     "project-layout.md": ["PROJECT_STATE.md", "research.md", "experiment-log.md", "article.md", "Resume rule"],
     "review-rubric.md": ["Original Value Gate", "Experience", "Clarity", "Total: /18"],
+    "article-quality-contract.md": ["Reader-visible gate", "article-evidence-map.json", "Anti-gaming rule"],
     "human-review-policy.md": ["mlflow.message.format=openai", "mlflow.chat.messages", "OpenAI互換", "View full trace", "参考資料", "Full Article Review UI", "9 + 2", "Agentが人間の代わりに値を送信しない"],
-    "article-template.md": ["## TL;DR", "## 対象読者", "## Research Question", "## 失敗したこと・TIPS"],
+    "article-template.md": ["## TL;DR", "## 対象読者", "## Research Question", "## 仕組みとデータフロー", "## 仮説と結果の対応", "## 再現用成果物", "## 失敗したこと・TIPS"],
 }
 for name, terms in resource_terms.items():
     t = (RES / name).read_text(encoding="utf-8") if (RES / name).is_file() else ""
@@ -142,6 +146,10 @@ required_paths = [
     ROOT / "docs" / "implementation" / "04-human-review.md",
     ROOT / "infra" / "mlflow" / "compose.yaml",
     ROOT / "evals" / "datasets" / "golden-set-v1.jsonl",
+    ROOT / "evals" / "datasets" / "human-calibration-v1.jsonl",
+    ROOT / "evals" / "quality_review_contract.py",
+    ROOT / "evals" / "compare_article_versions.py",
+    ROOT / "evals" / "calibrate_review_scores.py",
     ROOT / "evals" / "run_offline_eval.py",
     ROOT / "evals" / "human_review" / "full_article_review.py",
     ROOT / "tools" / "version_snapshot.py",

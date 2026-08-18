@@ -28,6 +28,9 @@ class FullArticleReviewTest(unittest.TestCase):
 
     def test_parse_review_requires_all_eleven_answers(self) -> None:
         values = {f"score.{name}": ["2"] for name in QUALITY_QUESTIONS}
+        values.update(
+            {f"rationale.{name}": ["記事中の該当箇所"] for name in QUALITY_QUESTIONS}
+        )
         values.update({"publishable": ["PASS"], "critical_issue": ["なし"]})
         answers, _ = parse_review(values)
         self.assertEqual(11, len(answers))

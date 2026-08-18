@@ -1,6 +1,6 @@
 ---
 name: quality-review
-description: 技術ブログ草稿を証拠、再現性、技術的正確性、初心者可読性、Qiita形式、公開リスクの観点から最終レビューし、MLflow TraceとHuman Reviewへ全文Markdownを引き渡すときに使う。
+description: 技術ブログ草稿を記事だけの読者視点とProject Evidence検証の二段階で独立レビューし、公開安全性とTechnical Article Offline Qualityを分離判定して、MLflow TraceとHuman Reviewへ全文Markdownを引き渡すときに使う。
 ---
 
 # Quality Review
@@ -15,6 +15,8 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 - all evidence
 - source list
 - review rubric
+- `article-quality-contract.md`
+- `results/article-evidence-map.json`
 
 
 ## 実行環境の固定条件
@@ -38,22 +40,22 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 
 ## Workflow
 
-1. 記事中の重要な技術主張を抽出する。
-2. 各主張をSourceまたはEvidenceへトレースする。
-3. 実行手順を順番に読み、欠落コマンドを探す。
-4. バージョンと固定環境を確認する。
-5. 未検証の断定を探す。
-6. 架空の出力、URL、数値がないか確認する。
-7. 初学者が詰まる前提知識を探す。
-8. スクリーンショットの必要箇所を確認する。
-9. Qiita Markdownとして構造を確認する。
-10. `google-search-quality-policy.md` と `review-rubric.md` に従い、Google方針が関係する場合は現行公式情報を再確認する。
-11. Original Value Gateを実行し、公式資料を読むだけでは得られない価値を1文で示す。
-12. 9項目を0〜2点で採点し合計18点を出す。
-13. Publication Gateとして `PASS / WARN / BLOCK` を付ける。
-14. BLOCKは記事へ直接修正案を反映できるものは修正し、Evidence不足は該当Phaseへ戻す。
-15. 修正後に再レビューする。
-16. Human Reviewを行う場合は `human-review-policy.md` を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
+1. Writerの自己説明やProject Evidenceを見ず、最初に`article.md`だけを読む。
+2. 記事だけから重要主張、仕組み、実行過程、仮説と結果、失敗、読者向け成果物を確認する。
+3. `article-quality-contract.md`のReader-visible Gateを実行する。
+4. 9項目をアンカーに従って仮採点し、各項目へ記事中の引用箇所、理由、不足を記録する。
+5. 次に`results/article-evidence-map.json`とProject Evidenceを読み、各主張をSourceまたはEvidenceへ検証する。
+6. 実行手順、バージョン、固定環境、入力と出力、画像、リンクを検証する。
+7. 未検証の断定、架空の出力、URL、数値、内部矛盾を探す。
+8. `google-search-quality-policy.md`と`review-rubric.md`に従い、Google方針が関係する場合は現行公式情報を再確認する。
+9. Original Value Gateを実行し、公式資料を読むだけでは得られない再利用可能な洞察とEvidenceを示す。
+10. Evidence検証後の9項目を0〜2点で確定し、合計18点を出す。
+11. Publishableを`PASS / WARN / BLOCK`、Quality statusを`QUALITY_READY / NEEDS_REVISION / BLOCKED`で別々に判定する。
+12. `QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし、未解決BLOCKなしの場合だけ許可する。
+13. 証拠のない2点、理由のない全項目2点を禁止する。
+14. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
+15. 修正後はArticle-only Reviewから再実行する。
+16. Human Reviewを行う場合は`human-review-policy.md`を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
 17. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
 18. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
 19. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
@@ -70,7 +72,7 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 
 ### Improvements
 
-### E-E-A-T / Quality score
+### Technical Article Offline Quality score
 
 - Experience: /2
 - Expertise: /2
@@ -87,9 +89,10 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 
 - 公式資料を読むだけでは得られない価値:
 
-### Publication status
+### Publication decisions
 
-`READY / NEEDS_REVISION / BLOCKED`
+- Publishable: `PASS / WARN / BLOCK`
+- Quality status: `QUALITY_READY / NEEDS_REVISION / BLOCKED`
 
 ### Machine-readable output
 
@@ -97,7 +100,10 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 
 ```json
 {
-  "publication_status": "READY",
+  "schema_version": "2.0",
+  "review_mode": "article_only_then_evidence_verification",
+  "publishable": "PASS",
+  "quality_status": "NEEDS_REVISION",
   "scores": {
     "experience": 0,
     "expertise": 0,
@@ -109,7 +115,15 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
     "evidence": 0,
     "clarity": 0
   },
+  "score_evidence": {
+    "experience": {
+      "article_locations": [],
+      "rationale": "",
+      "gaps": []
+    }
+  },
   "total": 0,
+  "reader_visible_gate": "FAIL",
   "blocking_issues": [],
   "warnings": [],
   "original_value": ""
@@ -117,13 +131,14 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 ```
 
 このJSONはMLflow Offline Evaluationへ取り込むため、key名を理由なく変更しない。
+`score_evidence`は省略せず9項目すべてを含める。例の`experience`だけを出力して完了しない。
 
 ## Completion checks
 
-`READY` はBLOCKが0件の場合のみ。
+`QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし、未解決BLOCKなしの場合のみ。
 
 Human Reviewを依頼する場合、`human-review-policy.md` のTrace全文Markdown確認とHuman handoff gateも全項目PASSであること。
 
 ## Project state update
 
-レビュー結果を `PROJECT_STATE.md` に反映する。`READY` はEvidence Gate PASSかつPublication BLOCKが0件の場合のみ。
+レビュー結果を`PROJECT_STATE.md`へ反映する。PublishableとQuality statusを別々に記録する。

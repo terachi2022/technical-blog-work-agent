@@ -28,6 +28,8 @@
 - Evaluation dataset version:
 - Machine evaluation: `NOT_RUN / PASS / WARN / FAIL`
 - Human review: `NOT_RUN / IN_PROGRESS / COMPLETE`
+- Publishable: `NOT_REVIEWED / PASS / WARN / BLOCK`
+- Quality status: `NOT_REVIEWED / QUALITY_READY / NEEDS_REVISION / BLOCKED`
 
 ## Publication identity
 

@@ -28,6 +28,18 @@ QUALITY_QUESTIONS = {
     "clarity": "結果と考察が分離され、明瞭で読みやすいか。",
 }
 
+QUALITY_ANCHORS = {
+    "experience": "0=実行過程なし / 1=環境・結果はあるが過程不足 / 2=操作・観測・失敗・修正・再実行を追跡可能",
+    "expertise": "0=手順の羅列 / 1=理由または制約の一部 / 2=仕組み・データフロー・設定理由・適用範囲を説明",
+    "authoritativeness": "0=重要主張の一次情報なし / 1=一次情報はあるが対応不足 / 2=主張近傍でversion・確認対象まで追跡可能",
+    "trustworthiness": "0=事実と推論の混同 / 1=分離はあるが対応不足 / 2=仮説・実測・不採用結果・制約を明示",
+    "originality": "0=既存情報の要約 / 1=実機検証のみ / 2=比較・失敗・追加検証から再利用可能な洞察を導出",
+    "reproducibility": "0=追試不能 / 1=基本手順のみ / 2=version・lock・入力・コード・判定条件が揃う",
+    "usefulness": "0=次の行動へ進めない / 1=回答または手順のみ / 2=判断基準・失敗回避・利用可能な成果物がある",
+    "evidence": "0=中心主張を追跡不能 / 1=Evidenceが遠いまたは内部限定 / 2=主張・記事位置・Source・ログ・成果物を追跡可能",
+    "clarity": "0=構造不明 / 1=基本構造はあるが説明不足 / 2=仕組み・手順・結果・考察・図表が明瞭",
+}
+
 
 @dataclass(frozen=True)
 class ReviewConfig:
@@ -55,8 +67,9 @@ def parse_review(values: dict[str, list[str]]) -> tuple[dict[str, str], dict[str
             raise ValueError(f"human_review.{name} は0、1、2のいずれかを選択してください。")
         answers[f"human_review.{name}"] = value
         rationale = values.get(f"rationale.{name}", [""])[0].strip()
-        if rationale:
-            rationales[f"human_review.{name}"] = rationale
+        if not rationale:
+            raise ValueError(f"human_review.{name}のRationaleを入力してください。")
+        rationales[f"human_review.{name}"] = rationale
 
     publishable = values.get("publishable", [""])[0]
     if publishable not in {"PASS", "FAIL"}:
@@ -100,10 +113,11 @@ def page_template(article_html: str, config: ReviewConfig, csrf_token: str) -> s
         <fieldset>
           <legend>human_review.{html.escape(name)}</legend>
           <p>{html.escape(instruction)}</p>
+          <p><strong>{html.escape(QUALITY_ANCHORS[name])}</strong></p>
           <div class="score-options">
             {''.join(f'<label><input required type="radio" name="score.{html.escape(name)}" value="{score}"> {score}</label>' for score in ('0', '1', '2'))}
           </div>
-          <textarea name="rationale.{html.escape(name)}" rows="2" placeholder="Rationale（任意）"></textarea>
+          <textarea required name="rationale.{html.escape(name)}" rows="3" placeholder="記事中の該当箇所と、この点数にした理由"></textarea>
         </fieldset>
         """
         for name, instruction in QUALITY_QUESTIONS.items()

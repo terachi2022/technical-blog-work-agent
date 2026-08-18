@@ -49,6 +49,7 @@ technical-blog-projects/<article-id>/
 │   ├── raw/
 │   └── processed/
 ├── results/
+│   ├── article-evidence-map.json
 │   ├── quality-review.json
 │   └── version-snapshot.json
 ├── logs/
@@ -92,6 +93,7 @@ Agent version / Git commit / branch / dirtyは `PROJECT_STATE.md` へ自動記�
 - `article.md`: Phase 11で生成するQiita公開候補。空ファイルは禁止
 - `data/raw/`, `logs/`: 加工前証拠
 - `results/`: 集計・レビュー・Agent version snapshot
+- `results/article-evidence-map.json`: 中心主張、記事位置、Evidence、読者向け成果物の対応
 - `scripts/`: 再生成可能な分析・グラフコード
 - `images/`: 実験Evidenceとなるグラフ・スクリーンショット
 
