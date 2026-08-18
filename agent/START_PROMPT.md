@@ -38,7 +38,7 @@ Version identityは初期化時に `PROJECT_STATE.md` と
 9. Visual Evidence → `images/` または具体的な撮影指示
 10. Evidence Gate → PASS / Missing Evidenceを記録
 11. Article Drafting → Evidence Gate PASS時のみ `article.md`
-12. Quality Review → `results/quality-review.json`
+12. Reader-visible Evidence Gate + Quality Review → `results/article-evidence-map.json` / `results/article-contract.json` / `results/quality-review.json`
 
 各Phase終了時に `PROJECT_STATE.md` を更新してください。完了済みPhaseを理由なく再実行しないでください。
 
@@ -51,7 +51,11 @@ Evidence GateがPASSしたら、説明だけで停止せず次を実行してく
 3. Qiita掲載用Markdownの実内容を `{{PROJECT_DIR}}/article.md` へ保存する。
 4. `article.md` が存在して空でないことを確認する。見出しだけのダミーや架空Evidenceは禁止する。
 5. `PROJECT_STATE.md` のPhase 11を `COMPLETED`、Content statusを `DRAFT` 以上へ更新する。
-6. 続けて `quality-review` を実行し、結果を `results/quality-review.json` へ保存する。
+6. `article-quality-contract.md`を適用し、中心主張と記事位置、Evidence、読者向け成果物を`results/article-evidence-map.json`へ保存する。さらに`evals.check_article_contract --strict`を実行し、`results/article-contract.json`へ保存する。
+7. `技術選定理由`で課題、今回採用した構成、その構成を優先して試すと決めた理由、適用条件・制約を明示し、採用理由をResearch Question、実験制約、実測または一次情報へ結ぶ。比較候補や不採用案は必須にしない。
+8. `中核技術の役割`で`中核技術の定義 / 解決する課題 / 今回なぜ必要か`を明示する。定義を一次情報へ結び、今回のResearch Questionと検証に必要な理由まで説明する。
+9. 実際の失敗がある場合は、エラーメッセージを最重要Evidenceとし、失敗した操作、エラー全文または主要行、原因、切り分け、効果がなかった方法、修正内容、再実行、再実行結果を固定ラベルで記録する。GUI障害はスクリーンショットまたは公開ログを許可する。失敗がない場合は理由と代替Evidence付きで`NOT_APPLICABLE`とする。
+10. Reader-visible GateがPASSした場合だけ`quality-review`を実行し、結果を`results/quality-review.json`へ保存する。
 
 Evidence GateがFAILなら `article.md` を作らず、Missing Evidenceと戻り先Phaseを記録して不足Phaseへ戻ってください。
 
@@ -78,6 +82,8 @@ experiment-log.md
 analysis.md
 discussion.md
 article.md
+results/article-evidence-map.json
+results/article-contract.json
 results/quality-review.json
 ```
 

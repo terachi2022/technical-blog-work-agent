@@ -52,6 +52,7 @@ MLflow Trace
 - 途中が省略記号やpreviewへ置換されていない
 - 全画像URLがHTTP 200で、本文中に表示される
 - Experience〜Clarityの9問がある
+- 各9問に0/1/2の具体的アンカーが表示され、記事箇所と理由の入力が必須である
 - PublishableとCritical issueがある
 - 対象Traceへread-onlyで接続できる
 - Trace側でも全文Markdown表示を確認できる
@@ -60,7 +61,7 @@ MLflow Trace
 
 ## Human + AI boundary
 
-Agentは表示・接続・設問の事前確認までを自動化する。9項目の点数、Publishable、Critical issueは人間だけが入力する。Agentが人間の代わりに値を送信しない。
+Agentは表示・接続・設問の事前確認までを自動化する。9項目の点数、各Rationale、Publishable、Critical issueは人間だけが入力する。Agentが人間の代わりに値を送信しない。
 
 ## Required evidence
 
@@ -74,4 +75,3 @@ Human Review準備完了を報告するときは次を残す。
 - 画像件数とHTTP確認結果
 - 設問数（9 + 2）
 - Review UI URL
-

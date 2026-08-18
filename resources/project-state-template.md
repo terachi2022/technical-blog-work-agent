@@ -28,6 +28,8 @@
 - Evaluation dataset version:
 - Machine evaluation: `NOT_RUN / PASS / WARN / FAIL`
 - Human review: `NOT_RUN / IN_PROGRESS / COMPLETE`
+- Publishable: `NOT_REVIEWED / PASS / WARN / BLOCK`
+- Quality status: `NOT_REVIEWED / QUALITY_READY / NEEDS_REVISION / BLOCKED`
 
 ## Publication identity
 
@@ -51,7 +53,7 @@
 | 9 | Visual Evidence | PENDING | images/ | |
 | 10 | Evidence Gate | PENDING | evidence-gate result | |
 | 11 | Article | PENDING | article.md | |
-| 12 | E-E-A-T / Quality Review | PENDING | results/quality-review.json | |
+| 12 | Reader-visible Contract / Quality Review | PENDING | results/article-contract.json / results/quality-review.json | |
 | 13 | Version Registration | PENDING | results/version-snapshot.json | Optional lifecycle |
 | 14 | Publication | PENDING | publication metadata | Optional lifecycle |
 | 15 | Production Measurement | PENDING | MLflow production metrics | Future |

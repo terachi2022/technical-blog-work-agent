@@ -17,15 +17,27 @@ from mlflow.genai import review_queues
 
 
 QUALITY_QUESTIONS = {
-    "experience": "実環境、コマンド、ログ、実測、失敗過程が示されているか。",
-    "expertise": "仕組み、設定理由、代替案、制約を正確に説明しているか。",
+    "experience": "実環境、操作、ログまたは画面、実測、判断、試行錯誤を記事の主題に十分な粒度で追跡できるか。",
+    "expertise": "仕組みに加え、解決課題、今回の採用構成、採用理由、適用条件・制約を正確に説明しているか。採用理由はResearch Question、実験制約、実測または一次情報へ結びついているか。",
     "authoritativeness": "主要な主張が一次情報や公式資料で支えられているか。",
     "trustworthiness": "事実、実測、仮説、推測、未確認事項を分離しているか。",
-    "originality": "この実験でしか得られない固有の知見があるか。",
+    "originality": "この実験固有の知見から、公式資料だけでは得られない再利用可能な洞察を導いているか。",
     "reproducibility": "条件、バージョン、コード、ロックファイルが揃っているか。",
-    "usefulness": "読者の具体的な問いに答え、再利用できる情報があるか。",
+    "usefulness": "読者の具体的な問いに答え、技術選定基準と実行可能な失敗回避策を再利用できるか。",
     "evidence": "結論を支えるEvidenceが追跡可能な形で存在するか。",
-    "clarity": "結果と考察が分離され、明瞭で読みやすいか。",
+    "clarity": "中核技術の定義、解決する課題、今回なぜ必要かが明瞭で、結果と考察、仕組み、構成理由を追えるか。",
+}
+
+QUALITY_ANCHORS = {
+    "experience": "0=実行過程なし / 1=環境・結果はあるが判断や試行錯誤が不足 / 2=操作・観測・判断・修正・再実行を十分に追跡可能",
+    "expertise": "0=手順の羅列 / 1=仕組み図または理由の一部だけ / 2=解決課題・採用構成・採用理由・適用条件と制約をEvidenceと結びつけて説明",
+    "authoritativeness": "0=重要主張の一次情報なし / 1=一次情報はあるが対応不足 / 2=主張近傍でversion・確認対象まで追跡可能",
+    "trustworthiness": "0=事実と推論の混同 / 1=分離はあるが対応不足 / 2=仮説・実測・失敗結果・制約を明示",
+    "originality": "0=既存情報の要約 / 1=実機検証のみ / 2=実験・比較・失敗・追加検証から再利用可能な洞察を導出",
+    "reproducibility": "0=追試不能 / 1=基本手順のみ / 2=version・lock・入力・コード・判定条件が揃う",
+    "usefulness": "0=次の行動へ進めない / 1=回答または一般的TIPSのみ / 2=具体的行動・技術選定基準・失敗回避・利用可能な成果物がある",
+    "evidence": "0=中心主張を追跡不能 / 1=Evidenceが遠いまたは内部限定 / 2=主張・記事位置・Source・ログ・成果物を追跡可能",
+    "clarity": "0=構造不明 / 1=中核技術の役割または説明順が一部不足 / 2=定義・解決課題・今回の必要性・仕組み・構成理由・手順・結果・考察が明瞭",
 }
 
 
@@ -55,8 +67,9 @@ def parse_review(values: dict[str, list[str]]) -> tuple[dict[str, str], dict[str
             raise ValueError(f"human_review.{name} は0、1、2のいずれかを選択してください。")
         answers[f"human_review.{name}"] = value
         rationale = values.get(f"rationale.{name}", [""])[0].strip()
-        if rationale:
-            rationales[f"human_review.{name}"] = rationale
+        if not rationale:
+            raise ValueError(f"human_review.{name}のRationaleを入力してください。")
+        rationales[f"human_review.{name}"] = rationale
 
     publishable = values.get("publishable", [""])[0]
     if publishable not in {"PASS", "FAIL"}:
@@ -100,10 +113,11 @@ def page_template(article_html: str, config: ReviewConfig, csrf_token: str) -> s
         <fieldset>
           <legend>human_review.{html.escape(name)}</legend>
           <p>{html.escape(instruction)}</p>
+          <p><strong>{html.escape(QUALITY_ANCHORS[name])}</strong></p>
           <div class="score-options">
             {''.join(f'<label><input required type="radio" name="score.{html.escape(name)}" value="{score}"> {score}</label>' for score in ('0', '1', '2'))}
           </div>
-          <textarea name="rationale.{html.escape(name)}" rows="2" placeholder="Rationale（任意）"></textarea>
+          <textarea required name="rationale.{html.escape(name)}" rows="3" placeholder="記事中の該当箇所と、この点数にした理由"></textarea>
         </fieldset>
         """
         for name, instruction in QUALITY_QUESTIONS.items()
@@ -153,7 +167,7 @@ def page_template(article_html: str, config: ReviewConfig, csrf_token: str) -> s
     <article id="article">{article_html}</article>
     <aside>
       <h2>人間評価</h2>
-      <p class="warning">記事の末尾「参考資料」まで確認してから送信してください。送信結果はMLflow Traceへ記録されます。</p>
+      <p class="warning">記事の末尾「参考資料」まで確認してください。実障害ではエラーメッセージを最重要Evidenceとして確認し、欠落時はReader-visible GateがFAILです。このGateから品質点の上限を機械的に決めず、各項目は記事全体から判断してください。送信結果はMLflow Traceへ記録されます。</p>
       <form method="post" action="/submit">
         <input type="hidden" name="csrf_token" value="{html.escape(csrf_token)}">
         {question_fields}

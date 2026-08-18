@@ -18,6 +18,13 @@ LLMに任せる必要がない項目をコードで評価する。
 - Evidence Gate通過状態
 - 未解決placeholder
 - quality-review JSONのschema
+- Reader-visibleな仮説/結果表、主張近傍リンク、再現用成果物の構造
+- 技術選定理由の課題、採用構成、採用理由、適用条件・制約
+- トラブルシューティングの失敗操作、実エラー、修正差分、再実行Evidence
+
+Machine checksは形式と契約の検査であり、単独で記事品質18点を出さない。
+固定anti-gaming caseは`evals/datasets/article-contract-regressions-v1.jsonl`で回帰検査する。
+実障害のエラーメッセージ欠落はReader-visible GateをFAILにするが、Experience、Originality、Usefulness、Clarityの点数上限へ機械変換しない。採用構成または採用理由が欠ける場合だけExpertiseの2点を禁止する。
 
 ### 2. LLM Judge
 
@@ -32,12 +39,21 @@ LLMに任せる必要がない項目をコードで評価する。
 - Discussion quality
 
 LLM Judgeだけを正解としない。
+各scoreに記事中の引用箇所、理由、不足を要求し、根拠のない全項目満点を認めない。
 
 ### 3. Human Review
 
 人間が重要記事・固定Datasetの一部をレビューし、LLM Judgeと人間評価のズレを確認する。
 
 記事レビューの表示・引き渡しは `human-review-policy.md` に従う。Traceには全文MarkdownをOpenAI互換assistant messageとして保存し、Trace画面でMarkdown表示を確認する。長文記事は標準Review previewではなく全文Review UIで評価する。
+
+## Human calibration
+
+- 人間評価済み記事をRubric version付きCalibration Datasetへ登録する。
+- Calibrationに使った記事だけで改善判定せず、別記事をholdoutとして評価する。
+- 合計点差、項目別絶対誤差、重大な0点のfalse READYを確認する。
+- 初期受入基準は合計点差2点以内、項目差は原則1点以内、重大な0点を持つ記事を`QUALITY_READY`にしないこととする。
+- Rubricを変更した場合はversionを上げ、旧scoreと同じ尺度として直接比較しない。
 
 ## Offline vs Production
 

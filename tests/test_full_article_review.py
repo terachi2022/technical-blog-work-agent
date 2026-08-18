@@ -24,10 +24,17 @@ class FullArticleReviewTest(unittest.TestCase):
             page = page_template(rendered, config, "csrf")
         self.assertIn("<h1>Title</h1>", page)
         self.assertIn("<h2>参考資料</h2>", page)
+        self.assertIn("解決課題・採用構成・採用理由", page)
+        self.assertIn("エラーメッセージを最重要Evidence", page)
+        self.assertIn("中核技術の定義、解決する課題、今回なぜ必要か", page)
+        self.assertIn("定義・解決課題・今回の必要性", page)
         self.assertNotIn("text...", page)
 
     def test_parse_review_requires_all_eleven_answers(self) -> None:
         values = {f"score.{name}": ["2"] for name in QUALITY_QUESTIONS}
+        values.update(
+            {f"rationale.{name}": ["記事中の該当箇所"] for name in QUALITY_QUESTIONS}
+        )
         values.update({"publishable": ["PASS"], "critical_issue": ["なし"]})
         answers, _ = parse_review(values)
         self.assertEqual(11, len(answers))

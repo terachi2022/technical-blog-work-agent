@@ -13,15 +13,15 @@ from mlflow.genai.label_schemas import InputCategorical, InputPassFail, InputTex
 
 
 QUALITY_QUESTIONS = {
-    "experience": "実環境、コマンド、ログ、実測、失敗過程が示されているか。",
-    "expertise": "仕組み、設定理由、代替案、制約を正確に説明しているか。",
+    "experience": "実環境、操作、ログまたは画面、実測、判断、試行錯誤を記事の主題に十分な粒度で追跡できるか。",
+    "expertise": "仕組みに加え、解決課題、今回の採用構成、採用理由、適用条件・制約を正確に説明しているか。採用理由はResearch Question、実験制約、実測または一次情報へ結びついているか。",
     "authoritativeness": "主要な主張が一次情報や公式資料で支えられているか。",
     "trustworthiness": "事実、実測、仮説、推測、未確認事項を分離しているか。",
-    "originality": "この実験でしか得られない固有の知見があるか。",
+    "originality": "この実験固有の知見から、公式資料だけでは得られない再利用可能な洞察を導いているか。",
     "reproducibility": "条件、バージョン、コード、ロックファイルが揃っているか。",
-    "usefulness": "読者の具体的な問いに答え、再利用できる情報があるか。",
+    "usefulness": "読者の問いに答え、技術選定基準と実行可能な失敗回避策を再利用できるか。",
     "evidence": "結論を支えるEvidenceが追跡可能な形で存在するか。",
-    "clarity": "結果と考察が分離され、明瞭で読みやすいか。",
+    "clarity": "中核技術の定義、解決する課題、今回なぜ必要かが明瞭で、結果と考察、仕組み、構成理由を追えるか。",
 }
 
 

@@ -16,7 +16,7 @@ services:
       - --port
       - "5000"
       - --allowed-hosts
-      - localhost,127.0.0.1,mlflow,mlflow:5000
+      - localhost:*,127.0.0.1:*,mlflow,mlflow:5000
       - --backend-store-uri
       - sqlite:////mlflow/db/mlflow.db
       - --artifacts-destination
@@ -35,7 +35,7 @@ services:
       - "127.0.0.1:5051:5051"
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5000
-      ARTICLE_PATH: /article/article.md
+      ARTICLE_PATH: ${ARTICLE_PATH:-/article/article.md}
       REVIEW_QUEUE_ID: ${REVIEW_QUEUE_ID:-}
       REVIEW_TRACE_ID: ${REVIEW_TRACE_ID:-}
       REVIEWER_ID: ${REVIEWER_ID:-tera}

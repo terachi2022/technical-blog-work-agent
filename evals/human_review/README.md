@@ -38,6 +38,7 @@ MLflow 3.15.1の標準Review画面はTraceの`response_preview`を表示する�
 
 ```bash
 export ARTICLE_PROJECT_DIR=/absolute/path/to/article-project
+export ARTICLE_PATH=/article/article.md
 export REVIEW_QUEUE_ID=rq-xxxxxxxx
 export REVIEW_TRACE_ID=tr-xxxxxxxx
 export REVIEWER_ID=reviewer-name
@@ -45,6 +46,9 @@ export REVIEWER_ID=reviewer-name
 docker compose -f infra/mlflow/compose.yaml \
   --profile human-review up -d --build review-ui
 ```
+
+`article-v2.1.md`のような未公開候補を評価する場合は、Project内の原本を上書きせず
+`ARTICLE_PATH=/article/article-v2.1.md`へ変更する。
 
 画面:
 

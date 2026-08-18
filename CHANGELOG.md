@@ -2,17 +2,37 @@
 
 ## Unreleased
 
-- STEP 1.5を将来工程の説明から実行可能なBaseline Article Generation手順へ再構成
-- Project初期化時にVersion Snapshot保存、`PROJECT_STATE.md`更新、実値入り`AGENT_TASK.md`生成を自動化
-- Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
-- `tools/verify_article_project.py`を追加し、記事とCanonical Evidenceの存在・内容を機械検証
-- 人間によるAgent version / Git commit / branch / dirtyの転記を廃止
-- `--resume-existing`で旧initializer作成済みProjectをEvidenceを保ったまま移行可能にした
-- Python bytecode cacheと`.DS_Store`を除外し、initializer実行によるRepository dirty化を防止
-- MLflow標準Reviewの1000文字preview制約を回避する全文記事Human Review UIをDocker Composeへ追加
-- 全文Review UIから11件のHuman Feedback記録とQueue完了更新を自動化
-- Human Review前にTrace全文Markdown表示と専用Review UIの末尾表示を別々に検証するPolicyを追加
-- Agent / Quality Review Skill / Resource / MemoryへHuman handoff gateと人間評価の責務境界を固定
+- Rubric 2.3で評価したarticle-v2.2のHuman Calibration v4 holdout labelを追加
+
+## 0.6.0
+
+- 中核技術の定義、解決する課題、今回なぜ必要かをReader-visible Contractへ追加
+- Article Template、Drafting Skill、Quality Review Skill、Clarityアンカーを汎用的な技術理解要件へ更新
+- 中核技術の文脈欠落を検出するScorerと2件の固定回帰caseを追加
+- Human Review Queueと全文Review UIのClarity設問を中核技術の定義・解決課題・今回の必要性へ整合
+- article-v2.1 Human ReviewのClarity指摘を、MLflow固有表現ではなく再利用可能なAgent要件へ変換
+- GitHubアカウント変更後の正規URLを`kazuharu2022`へ更新
+
+## 0.5.1
+
+- 技術選定理由を今回の採用構成と採用理由中心へ改め、不採用案の記載を任意化
+- 実障害のエラーメッセージEvidenceを独立したReader-visible Gateとして追加
+- Expertise以外の機械的な2点上限を廃止し、品質点はHuman Reviewアンカーによる判断へ分離
+- 採用案だけで通るcaseと、他項目が揃っていてもエラーEvidence欠落で落ちるcaseを固定回帰Datasetへ追加
+- Human Review UIで未公開のversioned articleを原本上書きなしに選択できる`ARTICLE_PATH`を追加
+- Rubric 2.2で評価したarticle-v2.1のHuman Calibration v3 holdout labelを追加
+
+## 0.5.0
+
+- 技術選定理由を課題、採用案、不採用案、選定理由、適用・非適用条件へ対応させる記事契約を追加
+- トラブルシューティングを実エラー、失敗操作、修正差分、再実行Evidenceまで追跡する固定形式へ変更
+- 見出しや単語の存在だけでは通らない選定理由・失敗過程Scorerを追加
+- Expertise、Experience、Originality、Usefulness、Clarityの2点条件とHuman Reviewアンカーを強化
+- 選定意図欠落、キーワードだけの失敗記録、空のNOT_APPLICABLEを検出し、正当な代替案なし・GUI Evidenceを許可する回帰Datasetを追加
+
+## 0.4.0
+
+- Technical Article Offline Qualityを人間評価で校正できる品質契約へ更新
 
 ## 0.3.2
 

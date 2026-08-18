@@ -2,8 +2,10 @@
 
 ## Purpose
 
-記事草稿へ進む前に、実証型記事として必要な証拠が揃っているかを検査する。
+記事草稿へ進む前に、実証型記事として必要なProject Evidenceが揃っているかを検査する。
 各SkillのCompletion checksとは別に、**記事化を許可するオーケストレーション上のGate**として使う。
+
+このGateのPASSは記事品質のPASSを意味しない。草稿作成後は`article-quality-contract.md`のReader-visible Gateを別に実行する。
 
 ## Required checks
 
@@ -67,3 +69,15 @@
 
 Evidence Gateを通すために、存在しない測定値、ログ、URL、画像、エラー、実行結果を生成してはならない。
 取得不能なものは `MISSING` または `NOT_APPLICABLE` とする。
+
+## Post-drafting routing
+
+```text
+Project Evidence Gate
+  PASS -> Article Drafting
+             -> Reader-visible Gate
+                  PASS -> Quality Review
+                  FAIL -> Article Draftingまたは不足EvidenceのPhaseへ戻る
+```
+
+Project内にEvidenceがあっても記事本文から到達できなければ、Reader-visible Gateは`MISSING`とする。
