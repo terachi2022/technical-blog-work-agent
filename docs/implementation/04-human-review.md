@@ -72,6 +72,18 @@ Queue名例:
 technical-blog-golden-v1-human-review
 ```
 
+再現可能なセットアップにはRepository内のスクリプトを使用できる。
+
+```bash
+export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+
+uv run python evals/human_review/setup_review_queue.py \
+  --experiment technical-blog-agent-offline-eval \
+  --queue-name technical-blog-golden-v1-human-review
+```
+
+MLflow OSSでは`InputNumeric`のUIサポートに制約があるため、9品質項目は意味を変えずCategorical `0 / 1 / 2`として作成する。`title`と`overwrite`はDatabricks ReviewApp専用なので使用しない。
+
 ## 3. TraceをQueueへ追加
 
 MLflow UIのTracesから対象traceを選択し:
