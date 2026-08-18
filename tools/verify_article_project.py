@@ -28,6 +28,7 @@ REQUIRED_TEXT_FILES = [
 ARTICLE_REQUIRED_HEADINGS = [
     "## TL;DR",
     "## Research Question",
+    "## 中核技術の役割",
     "## 仕組みとデータフロー",
     "## 技術選定理由",
     "## 検証環境",
@@ -91,6 +92,10 @@ def main() -> None:
         if not metrics["has_technology_selection_rationale"]:
             raise SystemExit(
                 "ERROR: article.md is missing a complete technology selection rationale"
+            )
+        if not metrics["has_core_technology_context"]:
+            raise SystemExit(
+                "ERROR: article.md is missing the core technology definition, problem, or article-specific need"
             )
         if metrics["actionable_troubleshooting_coverage"] != 1.0:
             raise SystemExit(

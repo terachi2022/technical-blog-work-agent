@@ -41,7 +41,7 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 ## Workflow
 
 1. Writerの自己説明やProject Evidenceを見ず、最初に`article.md`だけを読む。
-2. 記事だけから重要主張、仕組み、技術選定理由、実行過程、仮説と結果、失敗、読者向け成果物を確認する。
+2. 記事だけから重要主張、中核技術の定義・解決課題・今回の必要性、仕組み、技術選定理由、実行過程、仮説と結果、失敗、読者向け成果物を確認する。
 3. `article-quality-contract.md`のReader-visible Gateを実行する。
 4. 9項目をアンカーに従って仮採点し、各項目へ記事中の引用箇所、理由、不足を記録する。
 5. 次に`results/article-evidence-map.json`とProject Evidenceを読み、各主張をSourceまたはEvidenceへ検証する。
@@ -54,14 +54,15 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 12. `QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし、未解決BLOCKなしの場合だけ許可する。
 13. 証拠のない2点、理由のない全項目2点を禁止する。
 14. 今回採用した構成、またはその構成を選んだ理由が記事にない場合だけ、Expertiseを2点にしない。不採用案の有無をExpertiseの上限条件にしない。
-15. 実際の失敗があるのにエラー全文または主要行をReader-visible Evidenceとして確認できない場合は、Reader-visible Gateを`FAIL`とし、`QUALITY_READY`にしない。CLI/API障害は実ログ、GUI障害はスクリーンショットまたは公開ログを許可する。失敗した操作、原因、切り分け、効果がなかった方法、修正内容、再実行、再実行結果も同じ失敗として対応しているか確認する。このGate不合格からExperience、Originality、Usefulness、Clarityの点数上限を機械的に決めず、各アンカーと記事全体のEvidenceに基づいて人間が判断する。
-16. Machine Scorerのラベル検出PASSを意味品質の代替にしない。固定ラベルの内容が同じ失敗・同じ選定判断を支えるか確認する。
-17. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
-18. 修正後はArticle-only Reviewから再実行する。
-19. Human Reviewを行う場合は`human-review-policy.md`を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
-20. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
-21. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
-22. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
+15. 中核技術の定義、解決する課題、今回なぜ必要かのいずれかが欠ける場合はReader-visible Gateを`FAIL`とする。Machine GateからClarityの点数上限を機械的に決めず、意味内容はClarityアンカーに基づいて判断する。
+16. 実際の失敗があるのにエラー全文または主要行をReader-visible Evidenceとして確認できない場合は、Reader-visible Gateを`FAIL`とし、`QUALITY_READY`にしない。CLI/API障害は実ログ、GUI障害はスクリーンショットまたは公開ログを許可する。失敗した操作、原因、切り分け、効果がなかった方法、修正内容、再実行、再実行結果も同じ失敗として対応しているか確認する。このGate不合格からExperience、Originality、Usefulness、Clarityの点数上限を機械的に決めず、各アンカーと記事全体のEvidenceに基づいて人間が判断する。
+17. Machine Scorerのラベル検出PASSを意味品質の代替にしない。固定ラベルの内容が同じ中核技術、失敗、選定判断を支えるか確認する。
+18. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
+19. 修正後はArticle-only Reviewから再実行する。
+20. Human Reviewを行う場合は`human-review-policy.md`を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
+21. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
+22. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
+23. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
 
 ## Output
 
@@ -103,7 +104,7 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 
 ```json
 {
-  "schema_version": "2.2",
+  "schema_version": "2.3",
   "review_mode": "article_only_then_evidence_verification",
   "publishable": "PASS",
   "quality_status": "NEEDS_REVISION",

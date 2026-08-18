@@ -42,6 +42,13 @@ class VerifyArticleProjectTest(unittest.TestCase):
                     "実測に基づく結論です。",
                     "## Research Question",
                     "何を確認できるか。",
+                    "## 中核技術の役割",
+                    "**中核技術の定義**",
+                    "Trackingは実験のparameter、metric、modelをRunとして記録する仕組み。[公式仕様](https://example.com/tracking)",
+                    "**解決する課題**",
+                    "実験条件と結果を比較可能にする。",
+                    "**今回なぜ必要か**",
+                    "今回の検証で保存結果まで判定するため。",
                     "## 仕組みとデータフロー",
                     "clientからserverへEvidenceを送る。[公式仕様](https://example.com/official)",
                     "## 技術選定理由",
@@ -116,7 +123,7 @@ class VerifyArticleProjectTest(unittest.TestCase):
                 json.dumps(snapshot), encoding="utf-8"
             )
             review = {
-                "schema_version": "2.2",
+                "schema_version": "2.3",
                 "review_mode": "article_only_then_evidence_verification",
                 "publishable": "PASS",
                 "quality_status": "QUALITY_READY",

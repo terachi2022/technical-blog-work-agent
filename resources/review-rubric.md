@@ -6,6 +6,7 @@
 - [公開安全性と品質達成](#公開安全性と品質達成)
 - [採点原則](#採点原則)
 - [9項目のアンカー](#9項目のアンカー)
+- [中核技術理解Gate](#中核技術理解gate)
 - [エラーメッセージGate](#エラーメッセージgate)
 - [Original Value Gate](#original-value-gate)
 - [品質判定](#品質判定)
@@ -99,8 +100,14 @@ PublishableがPASSでもQuality statusはNEEDS_REVISIONになり得る。
 ### Clarity
 
 - `0`: 対象読者、結論、手順、結果の構造が不明で、読了が困難である。
-- `1`: 基本構造はあるが、選定意図、説明順、図表との対応、具体的な失敗回避手順のいずれかが不足する。仕組み図があっても「なぜその構成か」がなければ1点以下。
-- `2`: TL;DR、前提、仕組み、選定意図、手順、結果、考察、制約が明瞭で、図表と本文が相互補完し、読者が構成と操作の理由を追える。
+- `1`: 基本構造はあるが、中核技術の定義、解決する課題、今回なぜ必要か、選定意図、説明順、図表との対応、具体的な失敗回避手順のいずれかが不足する。
+- `2`: TL;DR、中核技術の定義・解決課題・今回の必要性、前提、仕組み、選定意図、手順、結果、考察、制約が明瞭で、図表と本文が相互補完し、読者が技術の役割と構成・操作の理由を追える。
+
+## 中核技術理解Gate
+
+記事の主題となる技術について、`中核技術の定義 / 解決する課題 / 今回なぜ必要か`をReader-visible Evidenceとして確認する。定義は一次情報へ結び、今回のResearch Questionと検証で必要な理由まで説明する。
+
+いずれかが欠ける場合はReader-visible Gateを`FAIL`とし、`QUALITY_READY`にしない。ただし、このMachine GateからClarityの点数上限を機械的に決めず、Clarityは上記アンカーと記事全体の意味内容に基づいて判断する。
 
 ## エラーメッセージGate
 
@@ -140,7 +147,7 @@ PublishableがPASSでもQuality statusはNEEDS_REVISIONになり得る。
 
 ```json
 {
-  "schema_version": "2.2",
+  "schema_version": "2.3",
   "review_mode": "article_only_then_evidence_verification",
   "publishable": "PASS",
   "quality_status": "NEEDS_REVISION",

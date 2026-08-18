@@ -1,6 +1,6 @@
 {
   "name": "technical-blog-work-agent",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "environment": {
     "hardware": "Apple M5 Max",
     "memory": "128GB",

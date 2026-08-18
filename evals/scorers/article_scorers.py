@@ -7,6 +7,7 @@ from mlflow.genai import scorer
 REQUIRED_SECTIONS = [
     "## TL;DR",
     "## Research Question",
+    "## 中核技術の役割",
     "## 仕組みとデータフロー",
     "## 技術選定理由",
     "## 検証環境",
@@ -92,6 +93,20 @@ def technology_selection_metrics(text: str) -> tuple[float, bool]:
     return coverage, all(checks)
 
 
+def core_technology_context_metrics(text: str) -> tuple[float, bool]:
+    section = markdown_section(text, "中核技術の役割")
+    checks = [
+        bool(labeled_content(section, label))
+        for label in [
+            "中核技術の定義",
+            "解決する課題",
+            "今回なぜ必要か",
+        ]
+    ]
+    coverage = sum(checks) / len(checks)
+    return coverage, all(checks)
+
+
 def troubleshooting_metrics(text: str) -> tuple[float, bool, bool]:
     section = markdown_section(text, "失敗したこと・TIPS")
     not_applicable = (
@@ -160,6 +175,7 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
     reader_artifacts = (int(github_repo) + int(notebook)) / 2
 
     selection_coverage, has_selection_rationale = technology_selection_metrics(text)
+    core_context_coverage, has_core_context = core_technology_context_metrics(text)
     (
         troubleshooting_coverage,
         has_error_message_evidence,
@@ -197,6 +213,8 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
         "has_error_message_evidence": has_error_message_evidence,
         "troubleshooting_error_gate_pass": troubleshooting_error_gate_pass,
         "has_mechanism_section": "## 仕組みとデータフロー" in text,
+        "core_technology_context_coverage": core_context_coverage,
+        "has_core_technology_context": has_core_context,
         "technology_selection_coverage": selection_coverage,
         "has_technology_selection_rationale": has_selection_rationale,
         "no_unresolved_publication_placeholders": not any(
@@ -245,10 +263,16 @@ def failure_journey_coverage(outputs: object) -> float:
 
 @scorer
 def has_technology_selection_rationale(outputs: object) -> bool:
-    """Require an explicit decision, alternative, and applicability rationale."""
+    """Require an explicit adopted approach, reason, and applicability rationale."""
     return bool(
         quality_contract_metrics(outputs)["has_technology_selection_rationale"]
     )
+
+
+@scorer
+def has_core_technology_context(outputs: object) -> bool:
+    """Require a definition, problem, and article-specific need for the core technology."""
+    return bool(quality_contract_metrics(outputs)["has_core_technology_context"])
 
 
 @scorer
@@ -294,6 +318,7 @@ SCORERS = [
     procedure_observation_coverage,
     reader_artifact_coverage,
     failure_journey_coverage,
+    has_core_technology_context,
     has_technology_selection_rationale,
     actionable_troubleshooting,
     no_unresolved_publication_placeholders,

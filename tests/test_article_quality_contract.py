@@ -25,6 +25,16 @@ class ArticleQualityContractTest(unittest.TestCase):
 ## Research Question
 問い。
 
+## 中核技術の役割
+**中核技術の定義**
+Trackingは実験のparameter、metric、modelをRunとして記録・可視化する仕組みである。[公式仕様](https://example.com/tracking)
+
+**解決する課題**
+実験条件と結果の対応を後から比較できる形で残す。
+
+**今回なぜ必要か**
+今回の再現検証で、実行完了だけでなくparameter、metric、modelが保存されたかを判定するために必要である。
+
 ## 仕組みとデータフロー
 clientからserverへ送信する。[公式仕様](https://example.com/official)
 
@@ -121,6 +131,8 @@ exit code 0
         self.assertEqual(1.0, metrics["procedure_observation_coverage"])
         self.assertEqual(1.0, metrics["reader_artifact_coverage"])
         self.assertEqual(1.0, metrics["failure_journey_coverage"])
+        self.assertEqual(1.0, metrics["core_technology_context_coverage"])
+        self.assertTrue(metrics["has_core_technology_context"])
         self.assertEqual(1.0, metrics["technology_selection_coverage"])
         self.assertTrue(metrics["has_technology_selection_rationale"])
         self.assertEqual(1.0, metrics["actionable_troubleshooting_coverage"])
@@ -137,6 +149,27 @@ clientからserverへ送信する。
         metrics = quality_contract_metrics(article)
         self.assertFalse(metrics["has_technology_selection_rationale"])
         self.assertLess(metrics["technology_selection_coverage"], 1.0)
+        self.assertFalse(contract_acceptance(metrics)["pass"])
+
+    def test_complete_workflow_without_core_technology_context_fails(self) -> None:
+        article = """# Title
+
+## 仕組みとデータフロー
+clientからserverへ送信する。
+
+## 技術選定理由
+**解決したい課題**
+実験を記録する。
+**採用した構成**
+tracking serverを採用する。
+**この構成を選んだ理由**
+今回は実験追跡を優先する。
+**適用条件・制約**
+local tutorialに限る。
+"""
+        metrics = quality_contract_metrics(article)
+        self.assertFalse(metrics["has_core_technology_context"])
+        self.assertEqual(0.0, metrics["core_technology_context_coverage"])
         self.assertFalse(contract_acceptance(metrics)["pass"])
 
     def test_troubleshooting_keywords_without_evidence_do_not_pass(self) -> None:

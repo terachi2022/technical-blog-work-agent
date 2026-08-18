@@ -14,6 +14,7 @@ STRICT_REQUIREMENTS = {
     "has_hypothesis_result_matrix": True,
     "procedure_observation_coverage": 1.0,
     "reader_artifact_coverage": 1.0,
+    "has_core_technology_context": True,
     "actionable_troubleshooting_coverage": 1.0,
     "troubleshooting_error_gate_pass": True,
     "has_technology_selection_rationale": True,

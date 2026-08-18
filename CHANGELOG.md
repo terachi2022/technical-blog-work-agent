@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.6.0
+
+- 中核技術の定義、解決する課題、今回なぜ必要かをReader-visible Contractへ追加
+- Article Template、Drafting Skill、Quality Review Skill、Clarityアンカーを汎用的な技術理解要件へ更新
+- 中核技術の文脈欠落を検出するScorerと2件の固定回帰caseを追加
+- article-v2.1 Human ReviewのClarity指摘を、MLflow固有表現ではなく再利用可能なAgent要件へ変換
+- GitHubアカウント変更後の正規URLを`kazuharu2022`へ更新
+
 ## 0.5.1
 
 - 技術選定理由を今回の採用構成と採用理由中心へ改め、不採用案の記載を任意化
