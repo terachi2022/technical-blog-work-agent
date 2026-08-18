@@ -7,16 +7,34 @@ evals/
 ├── datasets/
 │   ├── golden-set-v1.jsonl
 │   ├── human-calibration-v1.jsonl
+│   ├── human-calibration-v2.jsonl
 │   └── register_dataset.py
 ├── scorers/
 │   └── article_scorers.py
 ├── human_review/
+│   └── export_review.py
 └── run_offline_eval.py
 ```
 
 MVPではSTEP 1.5でAgent Repository外部のArticle Projectへ生成した実 `article.md` を `run_offline_eval.py` へ渡す半自動方式とする。
 
 `human-calibration-v1.jsonl`は人間評価済み記事のlabelを保存する。Calibration caseだけに合わせて改善せず、別記事をholdoutとして評価する。
+
+Human Review送信後は、画面の値を人手で転記せずMLflow Traceから取得する。
+
+```bash
+uv run python -m evals.human_review.export_review \
+  --trace-id tr-xxxxxxxx \
+  --queue-id rq-xxxxxxxx \
+  --output /path/to/results/human-review-v2.json \
+  --agent-review /path/to/results/quality-review-v2.json \
+  --dataset-output evals/datasets/human-calibration-v2.jsonl \
+  --case-id HC002 \
+  --article-id article-v2 \
+  --article-path /path/to/article-v2.md \
+  --rubric-version 2.0 \
+  --holdout
+```
 
 Before/AfterのReader-visible contractとreview scoreは次で比較する。
 
