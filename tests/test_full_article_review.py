@@ -26,6 +26,8 @@ class FullArticleReviewTest(unittest.TestCase):
         self.assertIn("<h2>参考資料</h2>", page)
         self.assertIn("解決課題・採用構成・採用理由", page)
         self.assertIn("エラーメッセージを最重要Evidence", page)
+        self.assertIn("中核技術の定義、解決する課題、今回なぜ必要か", page)
+        self.assertIn("定義・解決課題・今回の必要性", page)
         self.assertNotIn("text...", page)
 
     def test_parse_review_requires_all_eleven_answers(self) -> None:
