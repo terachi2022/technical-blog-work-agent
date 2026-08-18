@@ -24,6 +24,8 @@ class FullArticleReviewTest(unittest.TestCase):
             page = page_template(rendered, config, "csrf")
         self.assertIn("<h1>Title</h1>", page)
         self.assertIn("<h2>参考資料</h2>", page)
+        self.assertIn("解決課題・採用案・不採用案", page)
+        self.assertIn("失敗操作・エラー主要行・修正差分", page)
         self.assertNotIn("text...", page)
 
     def test_parse_review_requires_all_eleven_answers(self) -> None:

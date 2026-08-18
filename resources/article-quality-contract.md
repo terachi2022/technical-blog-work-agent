@@ -10,10 +10,12 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
 記事テーマに対して妥当な`NOT_APPLICABLE`を除き、次を本文へ含める。
 
 - `## 仕組みとデータフロー`: コンポーネント、処理順、入力、出力、保存先を説明する。
+- `## 技術選定理由`: 解決したい課題、採用構成、最低1つの比較候補、選定理由、不採用理由、適用条件、非適用条件を対応させる。仕組み図だけで代替しない。
 - `## 仮説と結果の対応`: 仮説ID、反証条件、実測、判定、Evidenceを同じ表で示す。
 - 検証手順ごとの`目的 / 実行 / 観測結果 / 判断`: コマンドを貼るだけで終えない。
 - 重要な公式仕様の主張近傍に一次情報リンクを置く。末尾の参考資料だけで代替しない。
-- 発生した失敗の`操作 / 観測 / 原因仮説 / 切り分け / 修正 / 再実行結果`を時系列で示す。
+- 発生した失敗の`発生条件 / 失敗した操作 / エラー全文または主要行 / 原因 / 切り分け / 効果がなかった方法 / 修正内容 / 再実行 / 再実行結果`を固定ラベルで時系列に示す。失敗操作、エラー、修正、再実行、再実行結果は実コードまたは実ログをコードブロックで示す。
+- 失敗がなかった場合は`判定: NOT_APPLICABLE / 理由 / 代替Evidence`を示す。記録不足をNOT_APPLICABLEにしない。
 - 比較可能な数値がある場合は、表またはグラフで差と条件を示す。
 - `## 再現用成果物`: 公開可能な記事ではRepository、Notebook、データ、完全ログへの導線を示す。
 - 追加検証の実施結果、または実施しない判断理由と残る不確実性を示す。
@@ -24,7 +26,7 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "article": "article.md",
   "claims": [
     {
@@ -44,6 +46,26 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
       "evidence": ["EV-01"]
     }
   ],
+  "decisions": [
+    {
+      "id": "D-01",
+      "problem": "",
+      "selected": "",
+      "rejected": [""],
+      "selection_evidence": ["EV-01"],
+      "article_section": "## 技術選定理由"
+    }
+  ],
+  "failures": [
+    {
+      "id": "F-01",
+      "status": "RESOLVED",
+      "error_evidence": ["EV-02"],
+      "fix_evidence": ["EV-03"],
+      "rerun_evidence": ["EV-04"],
+      "article_section": "## 失敗したこと・TIPS"
+    }
+  ],
   "reader_assets": [
     {
       "type": "repository",
@@ -60,10 +82,11 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
 
 - [ ] 中心主張が記事内の引用箇所とSource/Evidenceへ対応する
 - [ ] 仕組みとデータフローが説明されている
+- [ ] 技術選定が課題、採用案、不採用案、選定理由、適用・非適用条件へ対応している
 - [ ] 仮説、実測、判定、Evidenceが表で対応する
 - [ ] 主要コマンドに観測結果と判断が続く
 - [ ] 重要仕様の近くに一次情報リンクがある
-- [ ] 失敗が時系列の試行錯誤として説明されている
+- [ ] 失敗が実エラー、失敗操作、修正差分、再実行Evidenceを伴う時系列の試行錯誤として説明されている。または理由と代替Evidence付きでNOT_APPLICABLEである
 - [ ] 必要な比較表またはグラフがある
 - [ ] 読者が再現用成果物へアクセスできる
 - [ ] 追加検証の実施または不実施判断が説明されている
@@ -71,9 +94,24 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
 
 `MISSING`が1件でもあれば`QUALITY_READY`にしない。Project Evidence不足なら上流Phaseへ戻し、記事への反映不足ならArticle Draftingへ戻す。
 
+## Deterministic precheck
+
+Agent Repositoryのactivate済みuv環境から実行し、結果を記事Projectへ保存する。
+
+```bash
+python -m evals.check_article_contract \
+  --article /absolute/path/to/article.md \
+  --strict \
+  --output /absolute/path/to/results/article-contract.json
+```
+
+exit 0は構造契約の合格だけを表す。固定ラベル間の意味的一貫性、選定理由の妥当性、失敗原因の正しさは独立ReviewerとHuman Reviewで確認する。
+
 ## Non-applicable rule
 
 `NOT_APPLICABLE`は省略の言い換えに使わない。対象外である理由、読者価値への影響、代替Evidenceを記録する。
+
+実際の失敗がない場合も`article-evidence-map.json`の`failures`へ`status: NOT_APPLICABLE`、理由、代替Evidenceを1件記録する。
 
 例:
 
@@ -83,3 +121,5 @@ Project内にEvidenceが存在することと、読者が記事からEvidenceへ
 ## Anti-gaming rule
 
 見出し、URL、画像、コードブロックが存在するだけではPASSにしない。内容が中心主張を支え、読者の理解または追試に使えることを確認する。
+
+`技術選定理由`の表や失敗記録の固定ラベルが存在しても、理由、エラー、修正、再実行Evidenceが空または相互に無関係ならFAILとする。

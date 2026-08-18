@@ -41,7 +41,7 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 ## Workflow
 
 1. Writerの自己説明やProject Evidenceを見ず、最初に`article.md`だけを読む。
-2. 記事だけから重要主張、仕組み、実行過程、仮説と結果、失敗、読者向け成果物を確認する。
+2. 記事だけから重要主張、仕組み、技術選定理由、実行過程、仮説と結果、失敗、読者向け成果物を確認する。
 3. `article-quality-contract.md`のReader-visible Gateを実行する。
 4. 9項目をアンカーに従って仮採点し、各項目へ記事中の引用箇所、理由、不足を記録する。
 5. 次に`results/article-evidence-map.json`とProject Evidenceを読み、各主張をSourceまたはEvidenceへ検証する。
@@ -53,12 +53,15 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 11. Publishableを`PASS / WARN / BLOCK`、Quality statusを`QUALITY_READY / NEEDS_REVISION / BLOCKED`で別々に判定する。
 12. `QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし、未解決BLOCKなしの場合だけ許可する。
 13. 証拠のない2点、理由のない全項目2点を禁止する。
-14. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
-15. 修正後はArticle-only Reviewから再実行する。
-16. Human Reviewを行う場合は`human-review-policy.md`を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
-17. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
-18. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
-19. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
+14. `仕組みとデータフロー`だけがあり、解決課題、候補比較、選定・不採用理由、適用・非適用条件が記事にない場合はExpertiseとClarityを2点にしない。
+15. 発生した失敗が要約だけで、実エラー、失敗操作、修正差分、再実行結果を読者が追えない場合はExperienceとUsefulnessを2点にしない。その失敗をOriginal Valueの根拠にする場合はOriginalityも2点にしない。
+16. Machine Scorerのラベル検出PASSを意味品質の代替にしない。固定ラベルの内容が同じ失敗・同じ選定判断を支えるか確認する。
+17. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
+18. 修正後はArticle-only Reviewから再実行する。
+19. Human Reviewを行う場合は`human-review-policy.md`を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
+20. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
+21. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
+22. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
 
 ## Output
 
@@ -100,7 +103,7 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 
 ```json
 {
-  "schema_version": "2.0",
+  "schema_version": "2.1",
   "review_mode": "article_only_then_evidence_verification",
   "publishable": "PASS",
   "quality_status": "NEEDS_REVISION",

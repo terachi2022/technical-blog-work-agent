@@ -7,6 +7,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from evals.check_article_contract import contract_acceptance
+from evals.scorers.article_scorers import quality_contract_metrics
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -40,23 +43,69 @@ class VerifyArticleProjectTest(unittest.TestCase):
                     "## Research Question",
                     "何を確認できるか。",
                     "## 仕組みとデータフロー",
-                    "clientからserverへEvidenceを送る。",
+                    "clientからserverへEvidenceを送る。[公式仕様](https://example.com/official)",
+                    "## 技術選定理由",
+                    "**解決したい課題**",
+                    "clientとserverの依存を分離する。",
+                    "**採用した構成**",
+                    "uv clientとCompose server。",
+                    "| 候補 | 採否 | 選定理由 | 不採用理由 |",
+                    "|---|---|---|---|",
+                    "| uv + Compose | 採用 | 依存分離 | — |",
+                    "| host一括 | 不採用 | — | 状態が混在 |",
+                    "**適用条件**",
+                    "local serverが必要な場合。",
+                    "**非適用条件**",
+                    "remote managed serverだけを使う場合。",
                     "## 検証環境",
                     "Apple M5 Max、Python 3.14.6。",
+                    "## 検証手順",
+                    "**実行**",
+                    "```bash\nuv run python app.py\n```",
+                    "**観測結果**",
+                    "exit code 0。",
                     "## 結果",
                     "実行ログから確認した結果です。",
                     "## 仮説と結果の対応",
                     "| ID | 実測 | 判定 |\n|---|---|---|\n| H1 | exit 0 | SUPPORTED |",
                     "## 考察",
                     "結果と一次情報を分離して考察します。",
+                    "## 失敗したこと・TIPS",
+                    "### F-01 API error",
+                    "**発生条件**",
+                    "hostからAPIへ接続。",
+                    "**失敗した操作**",
+                    "```bash\nuv run python app.py\n```",
+                    "**エラー全文または主要行**",
+                    "```text\nHTTP 403 Invalid Host header\n```",
+                    "**原因**",
+                    "port付きHostが未許可。",
+                    "**切り分け**",
+                    "healthとAPIを比較。",
+                    "**効果がなかった方法**",
+                    "Host名だけの追加。",
+                    "**修正内容**",
+                    "```diff\n- localhost\n+ localhost:*\n```",
+                    "**再実行**",
+                    "```bash\nuv run python app.py\n```",
+                    "**再実行結果**",
+                    "```text\nexit code 0\n```",
                     "## 再現用成果物",
-                    "RepositoryとNotebookを公開します。",
+                    "- [Repository](https://github.com/example/project)",
+                    "- [Notebook](https://github.com/example/project/blob/main/demo.ipynb)",
                     "## 参考資料",
                     "公式資料を参照します。",
                     "検証手順とEvidenceの説明。" * 40,
                 ]
             )
             (project_dir / "article.md").write_text(article, encoding="utf-8")
+            metrics = quality_contract_metrics(article)
+            (project_dir / "results" / "article-contract.json").write_text(
+                json.dumps(
+                    {"metrics": metrics, "acceptance": contract_acceptance(metrics)}
+                ),
+                encoding="utf-8",
+            )
 
             snapshot = {
                 "article_id": "test",
@@ -69,7 +118,7 @@ class VerifyArticleProjectTest(unittest.TestCase):
                 json.dumps(snapshot), encoding="utf-8"
             )
             review = {
-                "schema_version": "2.0",
+                "schema_version": "2.1",
                 "review_mode": "article_only_then_evidence_verification",
                 "publishable": "PASS",
                 "quality_status": "QUALITY_READY",
@@ -110,10 +159,12 @@ class VerifyArticleProjectTest(unittest.TestCase):
                 json.dumps(review), encoding="utf-8"
             )
             evidence_map = {
-                "schema_version": "1.0",
+                "schema_version": "1.1",
                 "article": "article.md",
                 "claims": [{"id": "C-01", "reader_visible": True}],
                 "hypotheses": [],
+                "decisions": [{"id": "D-01", "selected": "uv + Compose"}],
+                "failures": [{"id": "F-01", "status": "RESOLVED"}],
                 "reader_assets": [{"type": "repository", "url": "https://example.com"}],
             }
             (project_dir / "results" / "article-evidence-map.json").write_text(

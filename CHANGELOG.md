@@ -2,24 +2,13 @@
 
 ## Unreleased
 
-- Reader-visible Evidence Gateと`results/article-evidence-map.json`を追加
-- Publishableと`QUALITY_READY / NEEDS_REVISION / BLOCKED`を分離
-- 9項目Rubricへ観測可能な0/1/2アンカーとscore Evidenceを追加
-- Article-only Review後にProject Evidenceを検証する独立Review手順へ変更
-- 主張近傍リンク、仮説/結果表、実行/観測対応、Repository/Notebook、失敗過程のMachine checksを追加
-- 人間評価済みCalibration DatasetとBefore/After比較ツールを追加
+## 0.5.0
 
-- STEP 1.5を将来工程の説明から実行可能なBaseline Article Generation手順へ再構成
-- Project初期化時にVersion Snapshot保存、`PROJECT_STATE.md`更新、実値入り`AGENT_TASK.md`生成を自動化
-- Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
-- `tools/verify_article_project.py`を追加し、記事とCanonical Evidenceの存在・内容を機械検証
-- 人間によるAgent version / Git commit / branch / dirtyの転記を廃止
-- `--resume-existing`で旧initializer作成済みProjectをEvidenceを保ったまま移行可能にした
-- Python bytecode cacheと`.DS_Store`を除外し、initializer実行によるRepository dirty化を防止
-- MLflow標準Reviewの1000文字preview制約を回避する全文記事Human Review UIをDocker Composeへ追加
-- 全文Review UIから11件のHuman Feedback記録とQueue完了更新を自動化
-- Human Review前にTrace全文Markdown表示と専用Review UIの末尾表示を別々に検証するPolicyを追加
-- Agent / Quality Review Skill / Resource / MemoryへHuman handoff gateと人間評価の責務境界を固定
+- 技術選定理由を課題、採用案、不採用案、選定理由、適用・非適用条件へ対応させる記事契約を追加
+- トラブルシューティングを実エラー、失敗操作、修正差分、再実行Evidenceまで追跡する固定形式へ変更
+- 見出しや単語の存在だけでは通らない選定理由・失敗過程Scorerを追加
+- Expertise、Experience、Originality、Usefulness、Clarityの2点条件とHuman Reviewアンカーを強化
+- 選定意図欠落とキーワードだけの失敗記録を検出する回帰テストを追加
 
 ## 0.4.0
 

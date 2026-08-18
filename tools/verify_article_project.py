@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from evals.quality_review_contract import validate_quality_review  # noqa: E402
+from evals.scorers.article_scorers import quality_contract_metrics  # noqa: E402
 
 
 REQUIRED_TEXT_FILES = [
@@ -28,10 +29,12 @@ ARTICLE_REQUIRED_HEADINGS = [
     "## TL;DR",
     "## Research Question",
     "## 仕組みとデータフロー",
+    "## 技術選定理由",
     "## 検証環境",
     "## 結果",
     "## 仮説と結果の対応",
     "## 考察",
+    "## 失敗したこと・TIPS",
     "## 再現用成果物",
     "## 参考資料",
 ]
@@ -84,18 +87,42 @@ def main() -> None:
         raise SystemExit("ERROR: PROJECT_STATE.md does not mark Phase 11 Article as COMPLETED")
 
     if args.require_quality_review:
+        metrics = quality_contract_metrics(article)
+        if not metrics["has_technology_selection_rationale"]:
+            raise SystemExit(
+                "ERROR: article.md is missing a complete technology selection rationale"
+            )
+        if metrics["actionable_troubleshooting_coverage"] != 1.0:
+            raise SystemExit(
+                "ERROR: article.md troubleshooting is not actionable or validly NOT_APPLICABLE"
+            )
+        contract_result = require_json(project_dir, "results/article-contract.json")
+        acceptance = contract_result.get("acceptance")
+        if not isinstance(acceptance, dict) or acceptance.get("pass") is not True:
+            raise SystemExit("ERROR: results/article-contract.json is not PASS")
+        if contract_result.get("metrics") != metrics:
+            raise SystemExit(
+                "ERROR: results/article-contract.json metrics are stale for article.md"
+            )
         review = require_json(project_dir, "results/quality-review.json")
         errors = validate_quality_review(review)
         if errors:
             formatted = "\n".join(f"- {error}" for error in errors)
             raise SystemExit(f"ERROR: invalid quality review contract:\n{formatted}")
         evidence_map = require_json(project_dir, "results/article-evidence-map.json")
-        for field in ["schema_version", "article", "claims", "reader_assets"]:
+        for field in [
+            "schema_version",
+            "article",
+            "claims",
+            "decisions",
+            "failures",
+            "reader_assets",
+        ]:
             if field not in evidence_map:
                 raise SystemExit(
                     f"ERROR: article evidence map is missing field: {field}"
                 )
-        for field in ["claims", "reader_assets"]:
+        for field in ["claims", "decisions", "failures", "reader_assets"]:
             if not isinstance(evidence_map[field], list) or not evidence_map[field]:
                 raise SystemExit(
                     f"ERROR: article evidence map field must be a non-empty list: {field}"

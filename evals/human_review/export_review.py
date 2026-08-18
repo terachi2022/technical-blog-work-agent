@@ -133,7 +133,7 @@ def main() -> None:
     parser.add_argument("--case-id")
     parser.add_argument("--article-id")
     parser.add_argument("--article-path", type=Path)
-    parser.add_argument("--rubric-version", default="2.0")
+    parser.add_argument("--rubric-version", default="2.1")
     parser.add_argument("--source-url")
     parser.add_argument("--holdout", action="store_true")
     args = parser.parse_args()

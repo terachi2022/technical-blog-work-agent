@@ -80,7 +80,11 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - 重要な技術主張には参照URLまたは実験証拠を紐づける。
 - Project内にEvidenceがあることと、記事読者がEvidenceへ到達できることを区別する。
 - Drafting後に`article-quality-contract.md`を適用し、中心主張、記事位置、Evidence、読者向け成果物を`results/article-evidence-map.json`へ保存する。
+- `evals.check_article_contract --strict`の結果を`results/article-contract.json`へ保存し、記事本文から再計算したmetricsとの一致を確認する。exit 1をReviewerの主観で上書きしない。
 - 重要な公式仕様は、末尾の参考資料だけでなく、支持する主張の近くへ一次情報リンクを置く。
+- 仕組み図の存在だけでExpertiseを満たしたと扱わない。解決したい課題、採用構成、比較候補、選定理由、不採用理由、適用条件、非適用条件を記事内で対応させる。
+- 実際に失敗が発生した記事では、失敗を要約だけで済ませない。失敗した操作、エラー主要行、原因、切り分け、効果がなかった方法、修正差分、再実行コマンド、再実行結果をReader-visible Evidenceとして残す。
+- 技術選定理由と失敗過程は`article-template.md`の固定ラベルを使う。Scorerを通すためだけにラベルを並べ、内容を欠落させることを禁止する。
 - WriterとReviewerを役割分離し、Reviewerは先に記事本文だけを評価してからProject Evidenceを検証する。
 - バージョン、取得日、実行環境を記録する。
 - 追加検証で結論が変わった場合は古い仮説を削除せず、`REJECTED / REVISED` として履歴を残す。
@@ -182,6 +186,8 @@ ChatGPT Workは可能な範囲で以下を実施する。
 - 再現コマンドまたはコードがある
 - 仮説と結果が対応している
 - 失敗と修正が隠されていない
+- 技術選定が課題、代替案、適用条件と対応している
+- 発生した失敗がエラー、修正差分、再実行Evidenceまで追跡できる
 - 事実・推論・意見が区別されている
 - 参照資料にリンクがある
 - Qiita掲載用Markdownとして読める

@@ -58,6 +58,7 @@ resources/
 ├── article-template.md
 ├── experiment-plan-template.md
 ├── evidence-record-template.md
+├── article-quality-contract.md
 ├── review-rubric.md
 ├── content-mlops-concept.md
 ├── versioning-policy.md
@@ -128,7 +129,7 @@ OK: 11 skills, package policies, and Content MLOps files validated
 ```
 
 
-## Content MLOps extension (v0.4.0)
+## Content MLOps extension (v0.5.0)
 
 ```text
 GitHub = what changed
@@ -138,7 +139,7 @@ Qiita / GA4 = future production performance
 
 Offline QualityとProduction Performanceは分離する。
 
-v0.4.0ではProject Evidence Gateに加えてReader-visible Evidence Gateを導入し、Publishableと`QUALITY_READY`を分離する。Machine Scorerは構造契約を検査し、人間または独立Reviewerの18点品質評価を代替しない。
+v0.5.0ではProject Evidence Gateに加えてReader-visible Evidence Gateを導入し、Publishableと`QUALITY_READY`を分離する。技術選定理由は課題、採用案、不採用案、適用条件へ対応させ、失敗記録は実エラー、修正差分、再実行Evidenceまで追跡する。Machine Scorerは構造契約を検査し、人間または独立Reviewerの18点品質評価を代替しない。
 
 Implementation order:
 

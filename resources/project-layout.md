@@ -50,6 +50,7 @@ technical-blog-projects/<article-id>/
 │   └── processed/
 ├── results/
 │   ├── article-evidence-map.json
+│   ├── article-contract.json
 │   ├── quality-review.json
 │   └── version-snapshot.json
 ├── logs/
@@ -94,6 +95,7 @@ Agent version / Git commit / branch / dirtyは `PROJECT_STATE.md` へ自動記�
 - `data/raw/`, `logs/`: 加工前証拠
 - `results/`: 集計・レビュー・Agent version snapshot
 - `results/article-evidence-map.json`: 中心主張、記事位置、Evidence、読者向け成果物の対応
+- `results/article-contract.json`: 記事候補に対する決定的Reader-visible構造検査と使用Agent version時点の結果
 - `scripts/`: 再生成可能な分析・グラフコード
 - `images/`: 実験Evidenceとなるグラフ・スクリーンショット
 

@@ -8,10 +8,12 @@ REQUIRED_SECTIONS = [
     "## TL;DR",
     "## Research Question",
     "## 仕組みとデータフロー",
+    "## 技術選定理由",
     "## 検証環境",
     "## 結果",
     "## 仮説と結果の対応",
     "## 考察",
+    "## 失敗したこと・TIPS",
     "## 再現用成果物",
     "## 参考資料",
 ]
@@ -52,6 +54,97 @@ def markdown_links(text: str) -> list[str]:
     return re.findall(r"\[[^\]]+\]\((https://[^)]+)\)", text)
 
 
+def markdown_section(text: str, heading: str) -> str:
+    match = re.search(
+        rf"(?ms)^##\s+{re.escape(heading)}\s*$\n(.*?)(?=^##\s+|\Z)", text
+    )
+    return match.group(1) if match else ""
+
+
+def labeled_content(section: str, label: str) -> str:
+    match = re.search(
+        rf"(?ms)^\*\*{re.escape(label)}\*\*\s*$\n"
+        rf"(.*?)(?=^\*\*|^###?\s+|\Z)",
+        section,
+    )
+    return match.group(1).strip() if match else ""
+
+
+def has_labeled_fenced_block(section: str, label: str) -> bool:
+    return bool(re.search(r"(?ms)```[^\n]*\n.+?\n```", labeled_content(section, label)))
+
+
+def table_rows(section: str) -> list[list[str]]:
+    rows = []
+    for line in section.splitlines():
+        if not line.startswith("|") or re.fullmatch(r"[|:\-\s]+", line):
+            continue
+        rows.append([cell.strip() for cell in line.strip("|").split("|")])
+    return rows
+
+
+def technology_selection_metrics(text: str) -> tuple[float, bool]:
+    section = markdown_section(text, "技術選定理由")
+    label_checks = [
+        bool(labeled_content(section, label))
+        for label in ["解決したい課題", "採用した構成", "適用条件", "非適用条件"]
+    ]
+    rows = table_rows(section)
+    adopted_row = any(
+        len(row) >= 4 and row[1] == "採用" and row[2] not in {"", "—", "-"}
+        for row in rows
+    )
+    rejected_row = any(
+        len(row) >= 4 and row[1] == "不採用" and row[3] not in {"", "—", "-"}
+        for row in rows
+    )
+    checks = [
+        *label_checks,
+        "選定理由" in section,
+        "不採用理由" in section,
+        adopted_row,
+        rejected_row,
+    ]
+    coverage = sum(checks) / len(checks)
+    return coverage, all(checks)
+
+
+def actionable_troubleshooting_coverage(text: str) -> float:
+    section = markdown_section(text, "失敗したこと・TIPS")
+    not_applicable = (
+        "NOT_APPLICABLE" in labeled_content(section, "判定")
+        and bool(labeled_content(section, "理由"))
+        and bool(labeled_content(section, "代替Evidence"))
+    )
+    if not_applicable:
+        return 1.0
+
+    required_labels = [
+        "発生条件",
+        "失敗した操作",
+        "エラー全文または主要行",
+        "原因",
+        "切り分け",
+        "効果がなかった方法",
+        "修正内容",
+        "再実行",
+        "再実行結果",
+    ]
+    label_checks = [bool(labeled_content(section, label)) for label in required_labels]
+    evidence_labels = [
+        "失敗した操作",
+        "エラー全文または主要行",
+        "修正内容",
+        "再実行",
+        "再実行結果",
+    ]
+    evidence_checks = [
+        has_labeled_fenced_block(section, label) for label in evidence_labels
+    ]
+    checks = [*label_checks, *evidence_checks]
+    return sum(checks) / len(checks)
+
+
 def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
     """Compute deterministic structure checks without claiming semantic quality."""
     text = article_text(outputs)
@@ -72,16 +165,25 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
     )
     reader_artifacts = (int(github_repo) + int(notebook)) / 2
 
-    failure_section = ""
-    failure_match = re.search(
-        r"(?ms)^##\s+失敗したこと・TIPS\s*$\n(.*?)(?=^##\s+|\Z)", text
-    )
-    if failure_match:
-        failure_section = failure_match.group(1)
-    failure_terms = ["操作", "観測", "原因", "切り分け", "修正", "再実行"]
-    failure_journey = sum(term in failure_section for term in failure_terms) / len(
-        failure_terms
-    )
+    selection_coverage, has_selection_rationale = technology_selection_metrics(text)
+    troubleshooting_coverage = actionable_troubleshooting_coverage(text)
+
+    unresolved_markers = [
+        "TODO",
+        "TBD",
+        "<YOUR_",
+        "<!--\n📸 Screenshot",
+        "[スクリーンショットを挿入]",
+        "採用候補",
+        "代替候補",
+        "Evidenceに基づく理由",
+        "<失敗名>",
+        "# 実際に失敗したcommand",
+        "# 実際のstderr",
+        "# 実際の設定差分",
+        "# 実際の再実行command",
+        "# 実際のstdout",
+    ]
 
     return {
         "required_section_coverage": sum(section in text for section in REQUIRED_SECTIONS)
@@ -92,8 +194,14 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
         ),
         "procedure_observation_coverage": procedure_pairs,
         "reader_artifact_coverage": reader_artifacts,
-        "failure_journey_coverage": failure_journey,
+        "failure_journey_coverage": troubleshooting_coverage,
+        "actionable_troubleshooting_coverage": troubleshooting_coverage,
         "has_mechanism_section": "## 仕組みとデータフロー" in text,
+        "technology_selection_coverage": selection_coverage,
+        "has_technology_selection_rationale": has_selection_rationale,
+        "no_unresolved_publication_placeholders": not any(
+            marker in text for marker in unresolved_markers
+        ),
     }
 
 
@@ -136,6 +244,22 @@ def failure_journey_coverage(outputs: object) -> float:
 
 
 @scorer
+def has_technology_selection_rationale(outputs: object) -> bool:
+    """Require an explicit decision, alternative, and applicability rationale."""
+    return bool(
+        quality_contract_metrics(outputs)["has_technology_selection_rationale"]
+    )
+
+
+@scorer
+def actionable_troubleshooting(outputs: object) -> float:
+    """Require error, failed command, fix, and rerun evidence in a standard record."""
+    return float(
+        quality_contract_metrics(outputs)["actionable_troubleshooting_coverage"]
+    )
+
+
+@scorer
 def environment_constraint_coverage(outputs: object) -> float:
     """Check whether the fixed local validation environment is documented."""
     text = article_text(outputs)
@@ -156,15 +280,9 @@ def has_reference_links(outputs: object) -> bool:
 @scorer
 def no_unresolved_publication_placeholders(outputs: object) -> bool:
     """Detect common placeholders that should not remain in a publication candidate."""
-    text = article_text(outputs)
-    markers = [
-        "TODO",
-        "TBD",
-        "<YOUR_",
-        "<!--\n📸 Screenshot",
-        "[スクリーンショットを挿入]",
-    ]
-    return not any(marker in text for marker in markers)
+    return bool(
+        quality_contract_metrics(outputs)["no_unresolved_publication_placeholders"]
+    )
 
 
 SCORERS = [
@@ -176,5 +294,7 @@ SCORERS = [
     procedure_observation_coverage,
     reader_artifact_coverage,
     failure_journey_coverage,
+    has_technology_selection_rationale,
+    actionable_troubleshooting,
     no_unresolved_publication_placeholders,
 ]
