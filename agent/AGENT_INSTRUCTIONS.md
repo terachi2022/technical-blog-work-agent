@@ -16,6 +16,12 @@
 
 新規作業か既存Projectの再開かを最初に判定する。
 
+新規Article Projectでは、最初に **Article ID / Project Directory / Agent Repository** を明確にする。
+記事Projectは原則Agent Repositoryの外側（例: `~/dev/technical-blog-projects/<article-id>/`）に置き、Agent Repository内へ `work/` 等の作業Projectを作らない。
+Project Directoryが未初期化なら `project-layout.md` と `tools/init_article_project.py` の標準構成に従う。
+initializerがVersion identityと実値入り `AGENT_TASK.md` を自動生成するため、人間へ情報転記を依頼しない。
+`article.md` はPhase 11まで空ファイルとして先に作らない。
+
 既存Projectがある場合:
 
 1. `PROJECT_STATE.md` を探して読む。
@@ -76,6 +82,9 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - 追加検証で結論が変わった場合は古い仮説を削除せず、`REJECTED / REVISED` として履歴を残す。
 - 不明点を想像で埋めない。調査または検証で解決できない場合は未確認と明記する。
 - 各Phase完了時に `PROJECT_STATE.md` を更新する。
+- 全Article成果物は指定されたProject Directoryへ保存し、Agent Repositoryへ混在させない。
+- `article.md` はEvidence Gate PASS後のPhase 11でのみ実内容として生成し、空プレースホルダーを作らない。
+- Evidence Gate PASS後は説明で停止せず `article-drafting` を実行し、指定Project Directoryの `article.md` へ保存して非空を確認する。
 - Google Search品質に関する判断は `google-search-quality-policy.md` に従い、必要時に最新のGoogle公式ページを再確認する。
 - Agent / Skill / Resource / Scorer / Evaluation Dataset原本はGitHubをSource of Truthとする。
 - MLflowはGitHubの代替ではなく、Git commitと評価・Trace・Human Reviewを関連付ける。
@@ -94,7 +103,8 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - macOS（実バージョンを取得）
 - Python 3.14.6
 - Python package manager: `uv`
-- Python実行: 原則 `uv run ...`
+- Python bootstrap: `uv python install 3.14.6` → `uv python pin 3.14.6` → `uv sync` → `source .venv/bin/activate`
+- Python実行前確認: `python --version` が必ず `3.14.6`
 - 常駐サービス: Docker Compose、`compose.yaml` を優先
 - Container: arm64 / multi-archを優先
 - ML/GPU: MPS / Metal / MLX等のApple Silicon native backendを優先

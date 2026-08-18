@@ -119,4 +119,4 @@ The package declares:
 requires-python = "==3.14.6"
 ```
 
-The audit container used to modify this package does not have Python 3.14.6 installed, so `uv run python tools/validate_skills.py` cannot resolve the target interpreter in this audit environment. The validator itself was executed with the available system Python and passed. On the target M5 Max environment, use the required Python 3.14.6 + uv environment as specified by the package.
+The audit container used to modify this package does not provide the target M5 Max/macOS Python 3.14.6 environment. The structural validator was executed with the available audit Python and passed. On the target M5 Max, first run `uv python install 3.14.6`, `uv python pin 3.14.6`, `uv sync`, then `source .venv/bin/activate`; all operational validation must then run with `python --version` reporting 3.14.6.

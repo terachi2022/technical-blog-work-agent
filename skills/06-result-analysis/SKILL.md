@@ -24,7 +24,7 @@ description: 技術実験の生データを整理し、仮説ごとの支持・�
 - OS: macOS
 - Python: 3.14.6
 - Pythonパッケージ管理: `uv`
-- Python実行: 原則 `uv run ...`
+- Python環境: `uv python install 3.14.6` / `uv python pin 3.14.6` / `uv sync` 後、`source .venv/bin/activate` を標準とする
 - 仮想環境・依存関係: `uv` で管理する
 - 常駐サービス、DB、Web UI、補助サーバーが必要な場合: `docker compose` で構成する
 - Apple SiliconでGPUアクセラレーションが使える場合: MPS/Metalを優先する

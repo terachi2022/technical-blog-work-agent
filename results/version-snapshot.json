@@ -1,0 +1,9 @@
+{
+  "article_id": null,
+  "agent_version": "0.3.0",
+  "git_commit": "83c8d05bc4145c45bb33357d73f131f51d8ff7c2",
+  "git_branch": "main",
+  "git_dirty": true,
+  "git_describe": "83c8d05-dirty",
+  "captured_at_utc": "2026-08-17T22:52:24.071853+00:00"
+}

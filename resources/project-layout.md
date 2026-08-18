@@ -5,10 +5,32 @@
 長期の技術検証を途中から再開でき、Agent / Skill / Memoryの会話状態に依存せず監査可能にする。
 実験結果や進捗のSource of TruthはMemoryではなくProject Filesとする。
 
-## Standard layout
+## Repository / Article Project boundary
+
+**Agent Repositoryと記事Projectは分離する。**
+
+標準配置:
 
 ```text
-project/
+~/dev/
+├── technical-blog-work-agent/       # GitHubでAgent / Skills / Resources / evalsを管理
+└── technical-blog-projects/         # 記事・実験Project。Agent Repositoryの外側
+    ├── 20260818-mlflow-m5max-001/
+    └── ...
+```
+
+理由:
+
+- 記事生成中の `research.md`、ログ、画像、`article.md` でAgent Repositoryをdirtyにしない。
+- 正式baselineの `git_dirty=false` と記事作業中のファイル変更を分離する。
+- Agent versionと記事Evidenceのライフサイクルを独立させる。
+
+原則として `technical-blog-work-agent/work/` のようにAgent Repository内へ記事Projectを作らない。
+
+## Standard article project layout
+
+```text
+technical-blog-projects/<article-id>/
 ├── PROJECT_STATE.md
 ├── README.md
 ├── research.md
@@ -18,9 +40,9 @@ project/
 ├── analysis.md
 ├── discussion.md
 ├── article.md
-├── pyproject.toml          # Python利用時
-├── uv.lock                 # Python利用時
-├── compose.yaml            # 常駐サービス利用時
+├── pyproject.toml          # 記事側でPythonコードを独立管理する必要がある場合のみ
+├── uv.lock                 # 同上
+├── compose.yaml            # 記事固有の常駐サービス利用時
 ├── src/                    # 必要時
 ├── scripts/                # 実験・分析・グラフ生成
 ├── data/
@@ -33,7 +55,27 @@ project/
 └── images/
 ```
 
-使用しないファイルを無理に作らない。
+使用しないファイルを無理に作らない。`article.md` もPhase 11で実内容が生成されるまで空ファイルを作らない。
+
+## Project initialization
+
+Agent Repositoryのactivate済みPythonから標準initializerを使う。
+
+```bash
+cd ~/dev/technical-blog-work-agent
+source .venv/bin/activate
+
+python tools/init_article_project.py \
+  --projects-root ~/dev/technical-blog-projects \
+  --article-id 20260818-mlflow-m5max-001 \
+  --topic "M5 Max環境でMLflowの公式チュートリアルを実行する" \
+  --audience "MLflowを初めて使用するエンジニア"
+```
+
+initializerはProject Directory、`PROJECT_STATE.md`、README、データ・結果・ログ・画像用ディレクトリに加え、
+`results/version-snapshot.json` と実値入り `AGENT_TASK.md` を作る。
+Agent version / Git commit / branch / dirtyは `PROJECT_STATE.md` へ自動記録し、人間に転記させない。
+`research.md` や `article.md` を空ファイルとして先に作らない。
 
 ## Canonical artifacts
 
@@ -44,9 +86,9 @@ project/
 - `experiment-log.md`: 実行コマンド、変更、失敗、再試行の時系列
 - `analysis.md`: 実測値から直接言える結果
 - `discussion.md`: 解釈、制約、追加検証
-- `article.md`: Qiita公開候補
+- `article.md`: Phase 11で生成するQiita公開候補。空ファイルは禁止
 - `data/raw/`, `logs/`: 加工前証拠
-- `results/`: 集計結果
+- `results/`: 集計・レビュー・Agent version snapshot
 - `scripts/`: 再生成可能な分析・グラフコード
 - `images/`: 実験Evidenceとなるグラフ・スクリーンショット
 
@@ -54,7 +96,7 @@ project/
 
 Agent開始時に既存Projectがある場合:
 
-1. `PROJECT_STATE.md` を読む。
+1. 指定されたProject Directoryの `PROJECT_STATE.md` を読む。
 2. Canonical artifactsの存在と内容を確認する。
 3. `PROJECT_STATE.md` と実ファイルが矛盾する場合、実ファイルを確認し状態を修正する。
 4. 完了済みPhaseを理由なく再実行しない。
@@ -77,7 +119,6 @@ Project Filesへ保存する:
 - 追加検証状態
 - 公開可否
 
-
 ## Content MLOps repository layout
 
 Agent repository itself may contain:
@@ -90,7 +131,8 @@ technical-blog-work-agent/
 │   ├── human_review/      # Human Review補助
 │   └── run_offline_eval.py
 ├── infra/mlflow/          # Docker Composeによるlocal MLflow
-└── docs/implementation/   # STEP 1〜4手順
+├── tools/                 # validator / project initializer / version snapshot
+└── docs/implementation/   # STEP 0〜4手順
 ```
 
-評価run / traces / artifactsの正本はMLflow、評価ロジックとDataset原本はGitHubとする。
+評価run / traces / artifactsの正本はMLflow、評価ロジックとDataset原本はGitHub、記事のResearch/Experiment/Article成果物は外部Article ProjectをSource of Truthとする。
