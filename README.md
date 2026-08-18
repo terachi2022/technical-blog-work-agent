@@ -58,7 +58,12 @@ resources/
 ├── article-template.md
 ├── experiment-plan-template.md
 ├── evidence-record-template.md
-└── review-rubric.md
+├── review-rubric.md
+├── content-mlops-concept.md
+├── versioning-policy.md
+├── evaluation-policy.md
+├── human-review-policy.md
+└── production-metrics-policy.md
 ```
 
 ## Fixed environment

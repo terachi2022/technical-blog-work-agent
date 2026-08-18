@@ -86,6 +86,8 @@ MLflow OSSでは`InputNumeric`のUIサポートに制約があるため、9品�
 
 ## 3. TraceをQueueへ追加
 
+Queueへ追加する前に、対象Traceの`View full trace`を開き、`article.md`がOpenAI互換assistant messageとして全文保存され、Markdown表示されることを確認する。最低限、記事タイトル、Markdownの箇条書きまたはコードブロック、末尾`参考資料`が読めることを合格条件とする。escaped JSON、生のdict文字列、先頭だけのpreviewならSTEP 2のTrace生成を修正して再実行する。
+
 MLflow UIのTracesから対象traceを選択し:
 
 ```text
@@ -120,6 +122,8 @@ http://127.0.0.1:5051
 合格条件:
 
 ```text
+□ View full traceでarticle.mdが全文Markdown表示される
+□ Traceに先頭見出しと末尾「参考資料」がある
 □ article.mdの先頭から参考資料まで表示される
 □ 記事画像が表示される
 □ 9品質項目、Publishable、Critical issueを入力できる
@@ -175,6 +179,8 @@ merge / release
 
 ```text
 □ Review Queueが作成済み
+□ TraceがOpenAI互換assistant messageで全文Markdown表示される
+□ Traceの末尾「参考資料」まで確認済み
 □ 9 quality questionsが定義済み
 □ Publishable / Critical issueがある
 □ Golden Set tracesをreviewできる

@@ -37,6 +37,8 @@ LLM Judgeだけを正解としない。
 
 人間が重要記事・固定Datasetの一部をレビューし、LLM Judgeと人間評価のズレを確認する。
 
+記事レビューの表示・引き渡しは `human-review-policy.md` に従う。Traceには全文MarkdownをOpenAI互換assistant messageとして保存し、Trace画面でMarkdown表示を確認する。長文記事は標準Review previewではなく全文Review UIで評価する。
+
 ## Offline vs Production
 
 Offline QualityとProduction Performanceを同一scoreへ単純合算しない。

@@ -19,7 +19,11 @@ class _RecordingSpan:
 
 class ArticleReviewRenderingTest(unittest.TestCase):
     def test_chat_completion_and_span_messages_preserve_markdown(self) -> None:
-        markdown = "# Heading\n\n## TL;DR\n\n- item\n"
+        markdown = (
+            "# Heading\n\n## TL;DR\n\n- item\n\n"
+            "```bash\nuv run python app.py\n```\n\n"
+            "## 参考資料\n\n- https://example.com\n"
+        )
         messages = [{"role": "user", "content": "Review this article."}]
         span = _RecordingSpan()
 
@@ -38,6 +42,11 @@ class ArticleReviewRenderingTest(unittest.TestCase):
             span.attributes["mlflow.chat.messages"],
         )
         self.assertEqual("chat.completion", response["object"])
+        traced_markdown = span.attributes["mlflow.chat.messages"][-1]["content"]
+        self.assertIn("# Heading", traced_markdown)
+        self.assertIn("```bash", traced_markdown)
+        self.assertIn("## 参考資料", traced_markdown)
+        self.assertTrue(traced_markdown.endswith("- https://example.com\n"))
 
     def test_article_text_accepts_supported_output_shapes(self) -> None:
         markdown = "# Heading"

@@ -2,6 +2,8 @@
 
 詳細手順は `docs/implementation/04-human-review.md` を参照。
 
+Human Reviewへ渡す前に `resources/human-review-policy.md` を適用する。Offline EvaluationのTraceは`article.md`全文をOpenAI互換assistant messageとして保持し、`View full trace`でMarkdown表示と末尾`参考資料`までを確認する。Traceの保存成功だけでは表示確認完了としない。
+
 初期MVPではMLflow UIからCustom Review Queueを作成する。
 Review Queuesはexperimental featureなので、APIを固定実装しすぎずUIベースから始める。
 

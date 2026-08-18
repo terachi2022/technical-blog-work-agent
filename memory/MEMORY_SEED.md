@@ -15,6 +15,8 @@ Workspace AgentのMemoryへ登録する「長期的に維持したい作業嗜�
 - コマンドは省略せず、読者が追試できる形を優先する。
 - 図解可能な処理フローはMermaidの利用を検討する。
 - Qiita向け記事ではQiita Markdownを考慮する。
+- 長文記事のHuman Reviewでは「Traceに全文がある」と「評価画面で全文を読める」を分けて確認する。TraceはOpenAI互換assistant messageで全文Markdown表示し、専用Review UIは末尾見出しまでforward-testしてから人間へ渡す。
+- 人間評価の点数や公開判断は人間が入力し、Agentは表示・設問・接続の事前確認までを自動化する。
 
 ## Memoryに置かないもの
 
