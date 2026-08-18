@@ -7,6 +7,8 @@
 - Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
 - `tools/verify_article_project.py`を追加し、記事とCanonical Evidenceの存在・内容を機械検証
 - 人間によるAgent version / Git commit / branch / dirtyの転記を廃止
+- `--resume-existing`で旧initializer作成済みProjectをEvidenceを保ったまま移行可能にした
+- Python bytecode cacheと`.DS_Store`を除外し、initializer実行によるRepository dirty化を防止
 
 ## 0.3.2
 

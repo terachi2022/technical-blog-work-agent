@@ -77,6 +77,9 @@ initializerはProject Directory、`PROJECT_STATE.md`、README、データ・結�
 Agent version / Git commit / branch / dirtyは `PROJECT_STATE.md` へ自動記録し、人間に転記させない。
 `research.md` や `article.md` を空ファイルとして先に作らない。
 
+旧initializerで作成済みのProjectに `AGENT_TASK.md` を追加する場合は、同じ引数に
+`--resume-existing` を加える。既存のPhase成果物を上書きせず、旧Version Snapshotを履歴として保存する。
+
 ## Canonical artifacts
 
 - `PROJECT_STATE.md`: 現在Phase、完了済み工程、次に行うこと

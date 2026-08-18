@@ -183,7 +183,7 @@ if step1.is_file():
 step15 = ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md"
 if step15.is_file():
     st = step15.read_text(encoding="utf-8")
-    for term in ["technical-blog-projects", "init_article_project.py", "AGENT_TASK.md", "Evidence Gate", "article-drafting", "article.md", "version-snapshot.json", "verify_article_project.py", "手作業で転記しない"]:
+    for term in ["technical-blog-projects", "init_article_project.py", "--resume-existing", "AGENT_TASK.md", "Evidence Gate", "article-drafting", "article.md", "version-snapshot.json", "verify_article_project.py", "手作業で転記しない"]:
         if term not in st:
             errors.append(f"01.5-baseline-article-generation.md: missing {term!r}")
 

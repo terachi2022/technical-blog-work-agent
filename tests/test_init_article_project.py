@@ -82,6 +82,52 @@ class InitArticleProjectTest(unittest.TestCase):
             self.assertNotEqual(0, result.returncode)
             self.assertIn("article-id must be one directory name", result.stderr)
 
+    def test_resume_existing_preserves_artifacts_and_adds_automation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            projects_root = Path(temp_dir) / "projects"
+            article_id = "test-resume-001"
+            project_dir = projects_root / article_id
+            common_args = [
+                sys.executable,
+                str(ROOT / "tools" / "init_article_project.py"),
+                "--projects-root",
+                str(projects_root),
+                "--article-id",
+                article_id,
+                "--topic",
+                "既存Projectを安全に再開する",
+                "--audience",
+                "技術ブログ運用者",
+                "--allow-dirty",
+            ]
+
+            subprocess.run(common_args, cwd=ROOT, check=True, capture_output=True, text=True)
+            evidence_path = project_dir / "research.md"
+            evidence_path.write_text("# Existing evidence\n", encoding="utf-8")
+            readme_path = project_dir / "README.md"
+            readme_path.write_text("# User-maintained README\n", encoding="utf-8")
+            original_snapshot = json.loads(
+                (project_dir / "results" / "version-snapshot.json").read_text(encoding="utf-8")
+            )
+            (project_dir / "AGENT_TASK.md").unlink()
+
+            result = subprocess.run(
+                [*common_args, "--resume-existing"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual("# Existing evidence\n", evidence_path.read_text(encoding="utf-8"))
+            self.assertEqual("# User-maintained README\n", readme_path.read_text(encoding="utf-8"))
+            self.assertTrue((project_dir / "AGENT_TASK.md").is_file())
+            archive = project_dir / "results" / (
+                f"version-snapshot.{original_snapshot['git_commit'][:12]}.json"
+            )
+            self.assertTrue(archive.is_file())
+            self.assertIn("Existing phase artifacts were preserved.", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
