@@ -53,8 +53,8 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 11. Publishableを`PASS / WARN / BLOCK`、Quality statusを`QUALITY_READY / NEEDS_REVISION / BLOCKED`で別々に判定する。
 12. `QUALITY_READY`は14/18以上、0点なし、Reader-visible GateにMISSINGなし、未解決BLOCKなしの場合だけ許可する。
 13. 証拠のない2点、理由のない全項目2点を禁止する。
-14. `仕組みとデータフロー`だけがあり、解決課題、候補比較、選定・不採用理由、適用・非適用条件が記事にない場合はExpertiseとClarityを2点にしない。
-15. 発生した失敗が要約だけで、実エラー、失敗操作、修正差分、再実行結果を読者が追えない場合はExperienceとUsefulnessを2点にしない。その失敗をOriginal Valueの根拠にする場合はOriginalityも2点にしない。
+14. 今回採用した構成、またはその構成を選んだ理由が記事にない場合だけ、Expertiseを2点にしない。不採用案の有無をExpertiseの上限条件にしない。
+15. 実際の失敗があるのにエラー全文または主要行をReader-visible Evidenceとして確認できない場合は、Reader-visible Gateを`FAIL`とし、`QUALITY_READY`にしない。CLI/API障害は実ログ、GUI障害はスクリーンショットまたは公開ログを許可する。失敗した操作、原因、切り分け、効果がなかった方法、修正内容、再実行、再実行結果も同じ失敗として対応しているか確認する。このGate不合格からExperience、Originality、Usefulness、Clarityの点数上限を機械的に決めず、各アンカーと記事全体のEvidenceに基づいて人間が判断する。
 16. Machine Scorerのラベル検出PASSを意味品質の代替にしない。固定ラベルの内容が同じ失敗・同じ選定判断を支えるか確認する。
 17. 記事修正で解決する不足はArticle Draftingへ、Evidence不足は該当する上流Phaseへ戻す。
 18. 修正後はArticle-only Reviewから再実行する。
@@ -103,7 +103,7 @@ description: 技術ブログ草稿を記事だけの読者視点とProject Evide
 
 ```json
 {
-  "schema_version": "2.1",
+  "schema_version": "2.2",
   "review_mode": "article_only_then_evidence_verification",
   "publishable": "PASS",
   "quality_status": "NEEDS_REVISION",

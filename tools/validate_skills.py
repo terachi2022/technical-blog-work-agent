@@ -61,7 +61,7 @@ agent_required_terms = [
     "OpenAI互換assistant message",
     "全文Review UI",
     "技術選定理由",
-    "エラー主要行",
+    "エラー全文または主要行",
 ]
 for term in agent_required_terms:
     if term not in agent_text:
@@ -108,8 +108,8 @@ specific = {
     "03-experiment-design/SKILL.md": ["experiment-plan-template.md", "独立変数", "従属変数", "交絡要因"],
     "04-environment-build/SKILL.md": ["arm64", "multi-arch", "MPS", "MLX"],
     "06-result-analysis/SKILL.md": ["scripts/", "images/", "中央値", "analysis.md", "仮説と結果の対応"],
-    "08-article-drafting/SKILL.md": ["evidence-gate.md", "article-quality-contract.md", "TL;DR", "技術選定理由", "不採用理由", "エラー全文または主要行", "失敗したこと・TIPS", "article.md", "article-evidence-map.json", "article-contract.json", "evals.check_article_contract"],
-    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "QUALITY_READY", "技術選定理由", "修正差分", "article_only_then_evidence_verification", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json", "human-review-policy.md", "OpenAI互換assistant message", "View full trace", "BLOCKED: REVIEW_SURFACE_INCOMPLETE"],
+    "08-article-drafting/SKILL.md": ["evidence-gate.md", "article-quality-contract.md", "TL;DR", "技術選定理由", "この構成を選んだ理由", "エラー全文または主要行", "失敗したこと・TIPS", "article.md", "article-evidence-map.json", "article-contract.json", "evals.check_article_contract"],
+    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "QUALITY_READY", "技術選定理由", "修正内容", "article_only_then_evidence_verification", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json", "human-review-policy.md", "OpenAI互換assistant message", "View full trace", "BLOCKED: REVIEW_SURFACE_INCOMPLETE"],
 }
 for rel, terms in specific.items():
     p = SKILLS / rel
@@ -121,15 +121,32 @@ for rel, terms in specific.items():
         if term not in t:
             errors.append(f"{rel}: missing policy term {term!r}")
 
+for rel, forbidden_terms in {
+    "08-article-drafting/SKILL.md": ["最低1つの不採用案", "候補・採否・選定理由・不採用理由"],
+    "10-quality-review/SKILL.md": ["ExperienceとUsefulnessを2点にしない", "Originalityも2点にしない", "ExpertiseとClarityを2点にしない"],
+}.items():
+    text = (SKILLS / rel).read_text(encoding="utf-8")
+    for term in forbidden_terms:
+        if term in text:
+            errors.append(f"{rel}: obsolete policy term remains {term!r}")
+
+rubric_text = (RES / "review-rubric.md").read_text(encoding="utf-8")
+for term in [
+    "採用構成または採用理由が記事にない場合だけ、Expertiseは最大1点",
+    "固定的な点数上限へ変換しない",
+]:
+    if term not in rubric_text:
+        errors.append(f"resources/review-rubric.md: missing score-boundary term {term!r}")
+
 # Resource content checks
 resource_terms = {
     "environment-policy.md": ["Apple Silicon / arm64", "Python          : 3.14.6", "Docker Compose", "linux/arm64", "MPS / Metal / MLX", "torch.backends.mps.is_available", "uv python install 3.14.6", "uv python pin 3.14.6", "source .venv/bin/activate"],
     "evidence-gate.md": ["Research Question", "Missing Evidence", "article-drafting", "Anti-fabrication"],
     "project-layout.md": ["PROJECT_STATE.md", "research.md", "experiment-log.md", "article.md", "article-contract.json", "Resume rule"],
-    "review-rubric.md": ["Original Value Gate", "Experience", "Clarity", "選定・不採用理由", "修正差分", "Total: /18"],
+    "review-rubric.md": ["Original Value Gate", "Experience", "Clarity", "採用理由", "エラーメッセージGate", "Total: /18"],
     "article-quality-contract.md": ["Reader-visible gate", "article-evidence-map.json", "article-contract.json", "evals.check_article_contract", "技術選定理由", "エラー全文または主要行", "Anti-gaming rule"],
     "human-review-policy.md": ["mlflow.message.format=openai", "mlflow.chat.messages", "OpenAI互換", "View full trace", "参考資料", "Full Article Review UI", "9 + 2", "Agentが人間の代わりに値を送信しない"],
-    "article-template.md": ["## TL;DR", "## 対象読者", "## Research Question", "## 仕組みとデータフロー", "## 技術選定理由", "不採用理由", "エラー全文または主要行", "## 仮説と結果の対応", "## 再現用成果物", "## 失敗したこと・TIPS"],
+    "article-template.md": ["## TL;DR", "## 対象読者", "## Research Question", "## 仕組みとデータフロー", "## 技術選定理由", "この構成を選んだ理由", "エラー全文または主要行", "## 仮説と結果の対応", "## 再現用成果物", "## 失敗したこと・TIPS"],
 }
 for name, terms in resource_terms.items():
     t = (RES / name).read_text(encoding="utf-8") if (RES / name).is_file() else ""
@@ -229,7 +246,7 @@ if step15.is_file():
 start_prompt = ROOT / "agent" / "START_PROMPT.md"
 if start_prompt.is_file():
     spt = start_prompt.read_text(encoding="utf-8")
-    for term in ["{{ARTICLE_ID}}", "{{PROJECT_DIR}}", "{{AGENT_REPOSITORY}}", "{{TOPIC}}", "{{AUDIENCE}}", "Evidence Gate", "article-drafting", "article.md", "技術選定理由", "エラー主要行", "quality-review.json", "人間に再入力・転記させず"]:
+    for term in ["{{ARTICLE_ID}}", "{{PROJECT_DIR}}", "{{AGENT_REPOSITORY}}", "{{TOPIC}}", "{{AUDIENCE}}", "Evidence Gate", "article-drafting", "article.md", "技術選定理由", "エラー全文または主要行", "quality-review.json", "人間に再入力・転記させず"]:
         if term not in spt:
             errors.append(f"agent/START_PROMPT.md: missing operational field {term!r}")
 else:
@@ -257,6 +274,7 @@ if article_scorers.is_file():
         "technology_selection_metrics",
         "has_technology_selection_rationale",
         "actionable_troubleshooting_coverage",
+        "troubleshooting_error_gate_pass",
         "has_labeled_evidence",
     ]:
         if term not in scorer_text:

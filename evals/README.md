@@ -44,7 +44,7 @@ uv run python -m evals.human_review.export_review \
   --case-id HC002 \
   --article-id article-v2 \
   --article-path /path/to/article-v2.md \
-  --rubric-version 2.1 \
+  --rubric-version 2.2 \
   --holdout
 ```
 

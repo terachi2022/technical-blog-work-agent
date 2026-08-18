@@ -19,11 +19,12 @@ LLMに任せる必要がない項目をコードで評価する。
 - 未解決placeholder
 - quality-review JSONのschema
 - Reader-visibleな仮説/結果表、主張近傍リンク、再現用成果物の構造
-- 技術選定理由の課題、採用案、不採用案、適用・非適用条件
+- 技術選定理由の課題、採用構成、採用理由、適用条件・制約
 - トラブルシューティングの失敗操作、実エラー、修正差分、再実行Evidence
 
 Machine checksは形式と契約の検査であり、単独で記事品質18点を出さない。
 固定anti-gaming caseは`evals/datasets/article-contract-regressions-v1.jsonl`で回帰検査する。
+実障害のエラーメッセージ欠落はReader-visible GateをFAILにするが、Experience、Originality、Usefulness、Clarityの点数上限へ機械変換しない。採用構成または採用理由が欠ける場合だけExpertiseの2点を禁止する。
 
 ### 2. LLM Judge
 

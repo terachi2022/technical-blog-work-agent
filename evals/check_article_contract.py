@@ -15,6 +15,7 @@ STRICT_REQUIREMENTS = {
     "procedure_observation_coverage": 1.0,
     "reader_artifact_coverage": 1.0,
     "actionable_troubleshooting_coverage": 1.0,
+    "troubleshooting_error_gate_pass": True,
     "has_technology_selection_rationale": True,
     "no_unresolved_publication_placeholders": True,
 }

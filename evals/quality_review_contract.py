@@ -42,8 +42,8 @@ def validate_quality_review(data: Any) -> list[str]:
     if not isinstance(data, dict):
         return ["review must be a JSON object"]
 
-    if data.get("schema_version") not in {"2.0", "2.1"}:
-        errors.append("schema_version must be '2.0' or '2.1'")
+    if data.get("schema_version") not in {"2.0", "2.1", "2.2"}:
+        errors.append("schema_version must be '2.0', '2.1', or '2.2'")
     if data.get("review_mode") != "article_only_then_evidence_verification":
         errors.append(
             "review_mode must be 'article_only_then_evidence_verification'"

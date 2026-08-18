@@ -35,16 +35,14 @@ clientからserverへ送信する。[公式仕様](https://example.com/official)
 **採用した構成**
 uv clientとDocker Compose serverを採用する。
 
-| 候補 | 採否 | 選定理由 | 不採用理由 |
-|---|---|---|---|
-| uv + Compose | 採用 | clientとserverを分離できる | — |
-| hostへ一括導入 | 不採用 | — | 状態と依存関係が混在する |
+**この構成を選んだ理由**
+今回はclientとserverの依存分離を優先して検証する。
 
-**適用条件**
-ローカルで常駐Tracking Serverが必要な場合。
+**判断根拠**
+Research QuestionとComposeの実行ログ。
 
-**非適用条件**
-管理済みremote serverだけを使う場合。
+**適用条件・制約**
+ローカルで常駐Tracking Serverが必要な場合。managed serverの比較は対象外。
 
 ## 検証環境
 M5 Max / Python 3.14.6 / uv
@@ -126,6 +124,8 @@ exit code 0
         self.assertEqual(1.0, metrics["technology_selection_coverage"])
         self.assertTrue(metrics["has_technology_selection_rationale"])
         self.assertEqual(1.0, metrics["actionable_troubleshooting_coverage"])
+        self.assertTrue(metrics["has_error_message_evidence"])
+        self.assertTrue(metrics["troubleshooting_error_gate_pass"])
         self.assertTrue(contract_acceptance(metrics)["pass"])
 
     def test_mechanism_without_selection_rationale_fails_selection_gate(self) -> None:
@@ -165,6 +165,43 @@ NOT_APPLICABLE
             1.0,
         )
 
+    def test_actual_failure_without_error_evidence_fails_error_gate(self) -> None:
+        article = """# Title
+
+## 失敗したこと・TIPS
+**発生条件**
+API接続時。
+**失敗した操作**
+```bash
+uv run python app.py
+```
+**エラー全文または主要行**
+エラーが表示された。
+**原因**
+Host設定。
+**切り分け**
+endpointを比較した。
+**効果がなかった方法**
+再読み込み。
+**修正内容**
+```diff
+- localhost
++ localhost:*
+```
+**再実行**
+```bash
+uv run python app.py
+```
+**再実行結果**
+```text
+exit code 0
+```
+"""
+        metrics = quality_contract_metrics(article)
+        self.assertFalse(metrics["has_error_message_evidence"])
+        self.assertFalse(metrics["troubleshooting_error_gate_pass"])
+        self.assertFalse(contract_acceptance(metrics)["pass"])
+
     def test_unedited_template_placeholders_do_not_pass_strict_contract(self) -> None:
         article = """# Title
 
@@ -173,15 +210,13 @@ NOT_APPLICABLE
 課題。
 **採用した構成**
 構成。
-| 候補 | 採否 | 選定理由 | 不採用理由 |
-|---|---|---|---|
-| 採用候補 | 採用 | Evidenceに基づく理由 | — |
-| 代替候補 | 不採用 | — | 理由 |
-**適用条件**
+**この構成を選んだ理由**
+今回はこの構成を優先する。
+**判断根拠**
+Evidenceに基づく理由。
+**適用条件・制約**
 条件。
-**非適用条件**
-条件。
-"""
+    """
         metrics = quality_contract_metrics(article)
         self.assertFalse(metrics["no_unresolved_publication_placeholders"])
         self.assertFalse(contract_acceptance(metrics)["pass"])

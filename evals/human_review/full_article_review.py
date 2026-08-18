@@ -17,11 +17,11 @@ from mlflow.genai import review_queues
 
 
 QUALITY_QUESTIONS = {
-    "experience": "実環境、コマンド、ログ、実測に加え、失敗操作・実エラー・修正差分・再実行結果を追跡できるか。",
-    "expertise": "仕組みに加え、解決課題、採用理由、不採用案、適用・非適用条件を正確に説明しているか。",
+    "experience": "実環境、操作、ログまたは画面、実測、判断、試行錯誤を記事の主題に十分な粒度で追跡できるか。",
+    "expertise": "仕組みに加え、解決課題、今回の採用構成、採用理由、適用条件・制約を正確に説明しているか。採用理由はResearch Question、実験制約、実測または一次情報へ結びついているか。",
     "authoritativeness": "主要な主張が一次情報や公式資料で支えられているか。",
     "trustworthiness": "事実、実測、仮説、推測、未確認事項を分離しているか。",
-    "originality": "この実験でしか得られない固有の知見があり、失敗を価値にする場合は実エラーから再実行まで追跡できるか。",
+    "originality": "この実験固有の知見から、公式資料だけでは得られない再利用可能な洞察を導いているか。",
     "reproducibility": "条件、バージョン、コード、ロックファイルが揃っているか。",
     "usefulness": "読者の具体的な問いに答え、技術選定基準と実行可能な失敗回避策を再利用できるか。",
     "evidence": "結論を支えるEvidenceが追跡可能な形で存在するか。",
@@ -29,13 +29,13 @@ QUALITY_QUESTIONS = {
 }
 
 QUALITY_ANCHORS = {
-    "experience": "0=実行過程なし / 1=環境・結果はあるが実エラーや修正差分が不足 / 2=失敗操作・エラー主要行・修正差分・再実行結果を追跡可能",
-    "expertise": "0=手順の羅列 / 1=仕組み図または理由の一部だけ / 2=解決課題・採用案・不採用案・選定理由・適用/非適用条件を説明",
+    "experience": "0=実行過程なし / 1=環境・結果はあるが判断や試行錯誤が不足 / 2=操作・観測・判断・修正・再実行を十分に追跡可能",
+    "expertise": "0=手順の羅列 / 1=仕組み図または理由の一部だけ / 2=解決課題・採用構成・採用理由・適用条件と制約をEvidenceと結びつけて説明",
     "authoritativeness": "0=重要主張の一次情報なし / 1=一次情報はあるが対応不足 / 2=主張近傍でversion・確認対象まで追跡可能",
-    "trustworthiness": "0=事実と推論の混同 / 1=分離はあるが対応不足 / 2=仮説・実測・不採用結果・制約を明示",
-    "originality": "0=既存情報の要約 / 1=実機検証のみ / 2=比較・追加検証または実エラーから再実行までの失敗分析で再利用可能な洞察を導出",
+    "trustworthiness": "0=事実と推論の混同 / 1=分離はあるが対応不足 / 2=仮説・実測・失敗結果・制約を明示",
+    "originality": "0=既存情報の要約 / 1=実機検証のみ / 2=実験・比較・失敗・追加検証から再利用可能な洞察を導出",
     "reproducibility": "0=追試不能 / 1=基本手順のみ / 2=version・lock・入力・コード・判定条件が揃う",
-    "usefulness": "0=次の行動へ進めない / 1=回答または一般的TIPSのみ / 2=技術選定基準・修正command付き失敗回避・利用可能な成果物がある",
+    "usefulness": "0=次の行動へ進めない / 1=回答または一般的TIPSのみ / 2=具体的行動・技術選定基準・失敗回避・利用可能な成果物がある",
     "evidence": "0=中心主張を追跡不能 / 1=Evidenceが遠いまたは内部限定 / 2=主張・記事位置・Source・ログ・成果物を追跡可能",
     "clarity": "0=構造不明 / 1=仕組みはあるが選定意図が不明 / 2=仕組み・なぜその構成か・手順・結果・考察が明瞭",
 }
@@ -167,7 +167,7 @@ def page_template(article_html: str, config: ReviewConfig, csrf_token: str) -> s
     <article id="article">{article_html}</article>
     <aside>
       <h2>人間評価</h2>
-      <p class="warning">記事の末尾「参考資料」まで確認してから送信してください。送信結果はMLflow Traceへ記録されます。</p>
+      <p class="warning">記事の末尾「参考資料」まで確認してください。実障害ではエラーメッセージを最重要Evidenceとして確認し、欠落時はReader-visible GateがFAILです。このGateから品質点の上限を機械的に決めず、各項目は記事全体から判断してください。送信結果はMLflow Traceへ記録されます。</p>
       <form method="post" action="/submit">
         <input type="hidden" name="csrf_token" value="{html.escape(csrf_token)}">
         {question_fields}

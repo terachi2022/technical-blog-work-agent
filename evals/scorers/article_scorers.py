@@ -77,47 +77,22 @@ def has_labeled_evidence(section: str, label: str) -> bool:
     return bool(fenced_block or markdown_asset)
 
 
-def table_rows(section: str) -> list[list[str]]:
-    rows = []
-    for line in section.splitlines():
-        if not line.startswith("|") or re.fullmatch(r"[|:\-\s]+", line):
-            continue
-        rows.append([cell.strip() for cell in line.strip("|").split("|")])
-    return rows
-
-
 def technology_selection_metrics(text: str) -> tuple[float, bool]:
     section = markdown_section(text, "技術選定理由")
-    label_checks = [
-        bool(labeled_content(section, label))
-        for label in ["解決したい課題", "採用した構成", "適用条件", "非適用条件"]
-    ]
-    rows = table_rows(section)
-    adopted_row = any(
-        len(row) >= 4 and row[1] == "採用" and row[2] not in {"", "—", "-"}
-        for row in rows
-    )
-    rejected_row = any(
-        len(row) >= 4 and row[1] == "不採用" and row[3] not in {"", "—", "-"}
-        for row in rows
-    )
-    no_alternative = (
-        "NOT_APPLICABLE" in labeled_content(section, "代替案の判定")
-        and bool(labeled_content(section, "代替案がない理由"))
-        and bool(labeled_content(section, "代替Evidence"))
-    )
     checks = [
-        *label_checks,
-        "選定理由" in section,
-        "不採用理由" in section,
-        adopted_row,
-        rejected_row or no_alternative,
+        bool(labeled_content(section, label))
+        for label in [
+            "解決したい課題",
+            "採用した構成",
+            "この構成を選んだ理由",
+            "適用条件・制約",
+        ]
     ]
     coverage = sum(checks) / len(checks)
     return coverage, all(checks)
 
 
-def actionable_troubleshooting_coverage(text: str) -> float:
+def troubleshooting_metrics(text: str) -> tuple[float, bool, bool]:
     section = markdown_section(text, "失敗したこと・TIPS")
     not_applicable = (
         "NOT_APPLICABLE" in labeled_content(section, "判定")
@@ -125,7 +100,7 @@ def actionable_troubleshooting_coverage(text: str) -> float:
         and bool(labeled_content(section, "代替Evidence"))
     )
     if not_applicable:
-        return 1.0
+        return 1.0, False, True
 
     required_labels = [
         "発生条件",
@@ -150,7 +125,18 @@ def actionable_troubleshooting_coverage(text: str) -> float:
         has_labeled_evidence(section, label) for label in evidence_labels
     ]
     checks = [*label_checks, *evidence_checks]
-    return sum(checks) / len(checks)
+    has_error_message_evidence = has_labeled_evidence(
+        section, "エラー全文または主要行"
+    )
+    return (
+        sum(checks) / len(checks),
+        has_error_message_evidence,
+        has_error_message_evidence,
+    )
+
+
+def actionable_troubleshooting_coverage(text: str) -> float:
+    return troubleshooting_metrics(text)[0]
 
 
 def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
@@ -174,7 +160,11 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
     reader_artifacts = (int(github_repo) + int(notebook)) / 2
 
     selection_coverage, has_selection_rationale = technology_selection_metrics(text)
-    troubleshooting_coverage = actionable_troubleshooting_coverage(text)
+    (
+        troubleshooting_coverage,
+        has_error_message_evidence,
+        troubleshooting_error_gate_pass,
+    ) = troubleshooting_metrics(text)
 
     unresolved_markers = [
         "TODO",
@@ -204,6 +194,8 @@ def quality_contract_metrics(outputs: object) -> dict[str, float | bool]:
         "reader_artifact_coverage": reader_artifacts,
         "failure_journey_coverage": troubleshooting_coverage,
         "actionable_troubleshooting_coverage": troubleshooting_coverage,
+        "has_error_message_evidence": has_error_message_evidence,
+        "troubleshooting_error_gate_pass": troubleshooting_error_gate_pass,
         "has_mechanism_section": "## 仕組みとデータフロー" in text,
         "technology_selection_coverage": selection_coverage,
         "has_technology_selection_rationale": has_selection_rationale,

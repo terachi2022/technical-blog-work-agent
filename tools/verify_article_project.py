@@ -96,6 +96,10 @@ def main() -> None:
             raise SystemExit(
                 "ERROR: article.md troubleshooting is not actionable or validly NOT_APPLICABLE"
             )
+        if not metrics["troubleshooting_error_gate_pass"]:
+            raise SystemExit(
+                "ERROR: an actual failure is missing reader-visible error message evidence"
+            )
         contract_result = require_json(project_dir, "results/article-contract.json")
         acceptance = contract_result.get("acceptance")
         if not isinstance(acceptance, dict) or acceptance.get("pass") is not True:

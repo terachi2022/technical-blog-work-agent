@@ -42,7 +42,7 @@ class InitArticleProjectTest(unittest.TestCase):
             self.assertFalse((project_dir / "article.md").exists())
 
             state = (project_dir / "PROJECT_STATE.md").read_text(encoding="utf-8")
-            self.assertIn("- Agent version: 0.5.0", state)
+            self.assertIn("- Agent version: 0.5.1", state)
             self.assertRegex(state, r"- Git commit: [0-9a-f]{40}")
 
             snapshot = json.loads(
