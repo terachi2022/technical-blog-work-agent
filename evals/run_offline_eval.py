@@ -15,9 +15,37 @@ sys.path.insert(0, str(ROOT))
 from evals.scorers.article_scorers import SCORERS  # noqa: E402
 
 
-@mlflow.trace(name="chatgpt_work_article_candidate")
-def load_article(article_path: str) -> str:
-    return Path(article_path).read_text(encoding="utf-8")
+@mlflow.trace(
+    name="chatgpt_work_article_candidate",
+    span_type="CHAT_MODEL",
+    attributes={"mlflow.message.format": "openai"},
+)
+def load_article(article_path: str, messages: list[dict]) -> dict:
+    article = Path(article_path).read_text(encoding="utf-8")
+    assistant_message = {"role": "assistant", "content": article}
+
+    # The Review UI reads this canonical conversation attribute first.  Keeping
+    # it on the traced span makes the article render as Markdown instead of an
+    # escaped JSON payload.
+    if span := mlflow.get_current_active_span():
+        span.set_attribute(
+            "mlflow.chat.messages",
+            [*messages, assistant_message],
+        )
+
+    return {
+        "id": f"article-{Path(article_path).stem}",
+        "object": "chat.completion",
+        "created": 0,
+        "model": "technical-blog-article-review",
+        "choices": [
+            {
+                "index": 0,
+                "message": assistant_message,
+                "finish_reason": "stop",
+            }
+        ],
+    }
 
 
 def git(*args: str) -> str:
@@ -123,7 +151,22 @@ def main() -> None:
 
         with mlflow.tracing.context(tags=tags):
             mlflow.genai.evaluate(
-                data=[{"inputs": {"article_path": str(article.resolve())}}],
+                data=[
+                    {
+                        "inputs": {
+                            "article_path": str(article.resolve()),
+                            "messages": [
+                                {
+                                    "role": "user",
+                                    "content": (
+                                        "Review the following article candidate "
+                                        "using the configured quality rubric."
+                                    ),
+                                }
+                            ],
+                        }
+                    }
+                ],
                 predict_fn=load_article,
                 scorers=SCORERS,
             )
