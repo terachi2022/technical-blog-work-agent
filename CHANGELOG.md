@@ -7,6 +7,7 @@
 - 中核技術の定義、解決する課題、今回なぜ必要かをReader-visible Contractへ追加
 - Article Template、Drafting Skill、Quality Review Skill、Clarityアンカーを汎用的な技術理解要件へ更新
 - 中核技術の文脈欠落を検出するScorerと2件の固定回帰caseを追加
+- Human ReviewのClarity設問を中核技術の定義・解決課題・今回の必要性へ整合
 - article-v2.1 Human ReviewのClarity指摘を、MLflow固有表現ではなく再利用可能なAgent要件へ変換
 - GitHubアカウント変更後の正規URLを`kazuharu2022`へ更新
 
