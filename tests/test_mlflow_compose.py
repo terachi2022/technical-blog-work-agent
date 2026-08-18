@@ -17,6 +17,12 @@ class MlflowComposeTest(unittest.TestCase):
             compose,
         )
 
+    def test_review_ui_can_select_unpublished_article_version(self) -> None:
+        compose = (ROOT / "infra" / "mlflow" / "compose.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("ARTICLE_PATH: ${ARTICLE_PATH:-/article/article.md}", compose)
+
 
 if __name__ == "__main__":
     unittest.main()
