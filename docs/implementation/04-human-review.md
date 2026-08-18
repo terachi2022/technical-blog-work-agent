@@ -95,7 +95,39 @@ Flag for review
 またはSDKを使う場合は `mlflow.genai.review_queues` を利用する。
 最初はUI操作を推奨する。
 
-## 4. Review sampling
+## 4. 長文記事は全文Review UIで評価
+
+MLflow 3.15.1 OSSの標準Review本文欄はTraceの`request_preview` / `response_preview`を表示する。DB上のpreviewは最大1000文字であり、長文記事では末尾まで表示されない。`View full trace`でTrace自体は確認できるが、記事全文と11問を同時に評価する用途には適さない。
+
+長文記事では、Repositoryの全文Review UIを使用する。
+
+```bash
+export ARTICLE_PROJECT_DIR=/absolute/path/to/article-project
+export REVIEW_QUEUE_ID=rq-xxxxxxxx
+export REVIEW_TRACE_ID=tr-xxxxxxxx
+export REVIEWER_ID=reviewer-name
+
+docker compose -f infra/mlflow/compose.yaml \
+  --profile human-review up -d --build review-ui
+```
+
+ブラウザで次を開く。
+
+```text
+http://127.0.0.1:5051
+```
+
+合格条件:
+
+```text
+□ article.mdの先頭から参考資料まで表示される
+□ 記事画像が表示される
+□ 9品質項目、Publishable、Critical issueを入力できる
+□ 送信結果が対象TraceのHuman Feedbackとして残る
+□ 送信成功後にQueue itemがcompleteになる
+```
+
+## 5. Review sampling
 
 全記事を毎回人間レビューする必要はない。
 
@@ -109,7 +141,7 @@ Flag for review
 
 を優先する。
 
-## 5. Human vs Automatedを比較
+## 6. Human vs Automatedを比較
 
 確認したいのはHuman Score自体だけではない。
 
@@ -121,7 +153,7 @@ Machine Scorer / LLM Judge
 
 例えばLLM JudgeがOriginality=2、人間が0を付けるケースが続くなら、Judge prompt / scorer設計の改善対象である。
 
-## 6. Agent変更の判断
+## 7. Agent変更の判断
 
 人間評価が低かったからといって直接Agentを書き換えない。
 
