@@ -9,6 +9,7 @@ evals/
 │   ├── article-contract-regressions-v1.jsonl
 │   ├── human-calibration-v1.jsonl
 │   ├── human-calibration-v2.jsonl
+│   ├── human-calibration-v3.jsonl
 │   └── register_dataset.py
 ├── scorers/
 │   └── article_scorers.py
@@ -19,7 +20,7 @@ evals/
 
 MVPではSTEP 1.5でAgent Repository外部のArticle Projectへ生成した実 `article.md` を `run_offline_eval.py` へ渡す半自動方式とする。
 
-`human-calibration-v1.jsonl`は人間評価済み記事のlabelを保存する。Calibration caseだけに合わせて改善せず、別記事をholdoutとして評価する。
+`human-calibration-v1.jsonl`〜`v3.jsonl`はRubric versionごとの人間評価済みlabelを保存する。Calibration caseだけに合わせて改善せず、`holdout: true`の記事を指示改善へ直接最適化しない。
 
 `article-contract-regressions-v1.jsonl`は、仕組み図だけの記事、キーワードだけのTIPS、完全な選定・失敗記録、妥当なNOT_APPLICABLEを固定し、Scorerのanti-gaming挙動を回帰検査する。
 
@@ -38,12 +39,12 @@ Human Review送信後は、画面の値を人手で転記せずMLflow Traceか�
 uv run python -m evals.human_review.export_review \
   --trace-id tr-xxxxxxxx \
   --queue-id rq-xxxxxxxx \
-  --output /path/to/results/human-review-v2.json \
-  --agent-review /path/to/results/quality-review-v2.json \
-  --dataset-output evals/datasets/human-calibration-v2.jsonl \
-  --case-id HC002 \
-  --article-id article-v2 \
-  --article-path /path/to/article-v2.md \
+  --output /path/to/results/human-review-v2.1.json \
+  --agent-review /path/to/results/quality-review-v2.1.json \
+  --dataset-output evals/datasets/human-calibration-v3.jsonl \
+  --case-id HC003 \
+  --article-id article-v2.1 \
+  --article-path /path/to/article-v2.1.md \
   --rubric-version 2.2 \
   --holdout
 ```

@@ -168,6 +168,7 @@ required_paths = [
     ROOT / "evals" / "datasets" / "article-contract-regressions-v1.jsonl",
     ROOT / "evals" / "datasets" / "human-calibration-v1.jsonl",
     ROOT / "evals" / "datasets" / "human-calibration-v2.jsonl",
+    ROOT / "evals" / "datasets" / "human-calibration-v3.jsonl",
     ROOT / "evals" / "quality_review_contract.py",
     ROOT / "evals" / "compare_article_versions.py",
     ROOT / "evals" / "calibrate_review_scores.py",

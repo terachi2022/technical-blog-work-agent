@@ -9,6 +9,7 @@
 - Expertise以外の機械的な2点上限を廃止し、品質点はHuman Reviewアンカーによる判断へ分離
 - 採用案だけで通るcaseと、他項目が揃っていてもエラーEvidence欠落で落ちるcaseを固定回帰Datasetへ追加
 - Human Review UIで未公開のversioned articleを原本上書きなしに選択できる`ARTICLE_PATH`を追加
+- Rubric 2.2で評価したarticle-v2.1のHuman Calibration v3 holdout labelを追加
 
 ## 0.5.0
 
