@@ -1,6 +1,6 @@
 ---
 name: quality-review
-description: 技術ブログ草稿を証拠、再現性、技術的正確性、初心者可読性、Qiita形式、公開リスクの観点から最終レビューするときに使う。
+description: 技術ブログ草稿を証拠、再現性、技術的正確性、初心者可読性、Qiita形式、公開リスクの観点から最終レビューし、MLflow TraceとHuman Reviewへ全文Markdownを引き渡すときに使う。
 ---
 
 # Quality Review
@@ -53,6 +53,10 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 13. Publication Gateとして `PASS / WARN / BLOCK` を付ける。
 14. BLOCKは記事へ直接修正案を反映できるものは修正し、Evidence不足は該当Phaseへ戻す。
 15. 修正後に再レビューする。
+16. Human Reviewを行う場合は `human-review-policy.md` を読み、`article.md`全文をOpenAI互換assistant messageとしてTraceへ保存する。
+17. `View full trace`でMarkdown表示、先頭見出し、末尾`参考資料`を確認する。Trace保存成功だけで表示確認済みと判定しない。
+18. 長文記事は標準Review previewではなく全文Review UIへ振り分け、全画像、9品質項目、Publishable、Critical issue、MLflow接続を実画面でforward-testする。
+19. Human handoff gateが1項目でも不合格なら採点を依頼せず、`BLOCKED: REVIEW_SURFACE_INCOMPLETE`として修正する。人間の評価値をAgentが入力・送信しない。
 
 ## Output
 
@@ -117,6 +121,8 @@ description: 技術ブログ草稿を証拠、再現性、技術的正確性、�
 ## Completion checks
 
 `READY` はBLOCKが0件の場合のみ。
+
+Human Reviewを依頼する場合、`human-review-policy.md` のTrace全文Markdown確認とHuman handoff gateも全項目PASSであること。
 
 ## Project state update
 

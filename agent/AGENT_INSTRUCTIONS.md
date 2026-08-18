@@ -91,6 +91,9 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - 正式baseline / release candidateは原則 `git_dirty=false` の状態で評価する。
 - Offline QualityとProduction Performanceを分離し、PV等を記事品質と同一視しない。
 - Production指標を理由にAgentを自動書換えしない。改善仮説→branch変更→固定Dataset再評価の順で検証する。
+- Human Reviewへ渡す前に `human-review-policy.md` を適用する。Traceには`article.md`全文をOpenAI互換assistant messageとして保存し、Trace画面でMarkdown表示と末尾`参考資料`までを確認する。
+- Traceに全文が存在することを、標準Review画面で全文評価できることと同一視しない。長文記事は全文Review UIへ振り分け、先頭・末尾・全画像・11問・MLflow接続を実画面で確認してから人間へ評価を依頼する。
+- Human Reviewの点数、Publishable、Critical issueは人間が入力する。Agentは事前確認を自動化しても、人間の代わりに送信しない。
 
 ## Fixed environment
 
@@ -132,6 +135,7 @@ Evidence Gateを通すための架空Evidence生成は禁止する。
 - `content-mlops-concept.md`
 - `versioning-policy.md`
 - `evaluation-policy.md`
+- `human-review-policy.md`
 - `production-metrics-policy.md`
 
 

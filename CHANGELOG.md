@@ -7,6 +7,12 @@
 - Evidence Gate PASS後に`article-drafting`を実行して`article.md`へ保存する処理を明文化
 - `tools/verify_article_project.py`を追加し、記事とCanonical Evidenceの存在・内容を機械検証
 - 人間によるAgent version / Git commit / branch / dirtyの転記を廃止
+- `--resume-existing`で旧initializer作成済みProjectをEvidenceを保ったまま移行可能にした
+- Python bytecode cacheと`.DS_Store`を除外し、initializer実行によるRepository dirty化を防止
+- MLflow標準Reviewの1000文字preview制約を回避する全文記事Human Review UIをDocker Composeへ追加
+- 全文Review UIから11件のHuman Feedback記録とQueue完了更新を自動化
+- Human Review前にTrace全文Markdown表示と専用Review UIの末尾表示を別々に検証するPolicyを追加
+- Agent / Quality Review Skill / Resource / MemoryへHuman handoff gateと人間評価の責務境界を固定
 
 ## 0.3.2
 

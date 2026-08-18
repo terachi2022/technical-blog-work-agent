@@ -26,6 +26,7 @@ required_resources = [
     "content-mlops-concept.md",
     "versioning-policy.md",
     "evaluation-policy.md",
+    "human-review-policy.md",
     "production-metrics-policy.md",
 ]
 
@@ -53,6 +54,9 @@ agent_required_terms = [
     "MLflow",
     "Offline Quality",
     "Production Performance",
+    "human-review-policy.md",
+    "OpenAI互換assistant message",
+    "全文Review UI",
 ]
 for term in agent_required_terms:
     if term not in agent_text:
@@ -100,7 +104,7 @@ specific = {
     "04-environment-build/SKILL.md": ["arm64", "multi-arch", "MPS", "MLX"],
     "06-result-analysis/SKILL.md": ["scripts/", "images/", "中央値", "analysis.md"],
     "08-article-drafting/SKILL.md": ["evidence-gate.md", "TL;DR", "失敗したこと・TIPS", "article.md"],
-    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json"],
+    "10-quality-review/SKILL.md": ["Original Value Gate", "18点", "google-search-quality-policy.md", "PROJECT_STATE.md", "quality-review.json", "human-review-policy.md", "OpenAI互換assistant message", "View full trace", "BLOCKED: REVIEW_SURFACE_INCOMPLETE"],
 }
 for rel, terms in specific.items():
     p = SKILLS / rel
@@ -118,6 +122,7 @@ resource_terms = {
     "evidence-gate.md": ["Research Question", "Missing Evidence", "article-drafting", "Anti-fabrication"],
     "project-layout.md": ["PROJECT_STATE.md", "research.md", "experiment-log.md", "article.md", "Resume rule"],
     "review-rubric.md": ["Original Value Gate", "Experience", "Clarity", "Total: /18"],
+    "human-review-policy.md": ["mlflow.message.format=openai", "mlflow.chat.messages", "OpenAI互換", "View full trace", "参考資料", "Full Article Review UI", "9 + 2", "Agentが人間の代わりに値を送信しない"],
     "article-template.md": ["## TL;DR", "## 対象読者", "## Research Question", "## 失敗したこと・TIPS"],
 }
 for name, terms in resource_terms.items():
@@ -138,6 +143,7 @@ required_paths = [
     ROOT / "infra" / "mlflow" / "compose.yaml",
     ROOT / "evals" / "datasets" / "golden-set-v1.jsonl",
     ROOT / "evals" / "run_offline_eval.py",
+    ROOT / "evals" / "human_review" / "full_article_review.py",
     ROOT / "tools" / "version_snapshot.py",
     ROOT / "tools" / "init_article_project.py",
     ROOT / "tools" / "verify_article_project.py",
@@ -145,6 +151,25 @@ required_paths = [
 for p in required_paths:
     if not p.is_file():
         errors.append(f"missing Content MLOps file: {p.relative_to(ROOT)}")
+
+offline_eval = ROOT / "evals" / "run_offline_eval.py"
+if offline_eval.is_file():
+    offline_text = offline_eval.read_text(encoding="utf-8")
+    for term in [
+        'attributes={"mlflow.message.format": "openai"}',
+        '"mlflow.chat.messages"',
+        '"role": "assistant"',
+        '"object": "chat.completion"',
+    ]:
+        if term not in offline_text:
+            errors.append(f"evals/run_offline_eval.py: missing Trace Markdown contract {term!r}")
+
+human_review_guide = ROOT / "docs" / "implementation" / "04-human-review.md"
+if human_review_guide.is_file():
+    guide_text = human_review_guide.read_text(encoding="utf-8")
+    for term in ["View full trace", "全文Markdown表示", "参考資料", "全文Review UI"]:
+        if term not in guide_text:
+            errors.append(f"docs/implementation/04-human-review.md: missing display gate {term!r}")
 
 # Mandatory uv/Python bootstrap checks
 bootstrap = ROOT / "docs" / "implementation" / "00-environment-bootstrap.md"
@@ -183,7 +208,7 @@ if step1.is_file():
 step15 = ROOT / "docs" / "implementation" / "01.5-baseline-article-generation.md"
 if step15.is_file():
     st = step15.read_text(encoding="utf-8")
-    for term in ["technical-blog-projects", "init_article_project.py", "AGENT_TASK.md", "Evidence Gate", "article-drafting", "article.md", "version-snapshot.json", "verify_article_project.py", "手作業で転記しない"]:
+    for term in ["technical-blog-projects", "init_article_project.py", "--resume-existing", "AGENT_TASK.md", "Evidence Gate", "article-drafting", "article.md", "version-snapshot.json", "verify_article_project.py", "手作業で転記しない"]:
         if term not in st:
             errors.append(f"01.5-baseline-article-generation.md: missing {term!r}")
 

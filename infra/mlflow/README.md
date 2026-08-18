@@ -23,6 +23,12 @@ UI:
 http://127.0.0.1:5000
 ```
 
+長文記事のHuman ReviewはMLflow標準previewではなく、`human-review` profileの全文Review UIを使う。起動方法は `evals/human_review/README.md` を参照する。
+
+```text
+http://127.0.0.1:5051
+```
+
 ## Stop
 
 ```bash
