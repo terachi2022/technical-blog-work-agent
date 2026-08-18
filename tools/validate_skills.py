@@ -257,7 +257,7 @@ if article_scorers.is_file():
         "technology_selection_metrics",
         "has_technology_selection_rationale",
         "actionable_troubleshooting_coverage",
-        "has_labeled_fenced_block",
+        "has_labeled_evidence",
     ]:
         if term not in scorer_text:
             errors.append(f"evals/scorers/article_scorers.py: missing {term!r}")

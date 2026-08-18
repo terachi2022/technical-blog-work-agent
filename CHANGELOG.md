@@ -8,7 +8,7 @@
 - トラブルシューティングを実エラー、失敗操作、修正差分、再実行Evidenceまで追跡する固定形式へ変更
 - 見出しや単語の存在だけでは通らない選定理由・失敗過程Scorerを追加
 - Expertise、Experience、Originality、Usefulness、Clarityの2点条件とHuman Reviewアンカーを強化
-- 選定意図欠落とキーワードだけの失敗記録を検出する回帰テストを追加
+- 選定意図欠落、キーワードだけの失敗記録、空のNOT_APPLICABLEを検出し、正当な代替案なし・GUI Evidenceを許可する回帰Datasetを追加
 
 ## 0.4.0
 

@@ -70,8 +70,11 @@ def labeled_content(section: str, label: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def has_labeled_fenced_block(section: str, label: str) -> bool:
-    return bool(re.search(r"(?ms)```[^\n]*\n.+?\n```", labeled_content(section, label)))
+def has_labeled_evidence(section: str, label: str) -> bool:
+    content = labeled_content(section, label)
+    fenced_block = re.search(r"(?ms)```[^\n]*\n.+?\n```", content)
+    markdown_asset = re.search(r"!?\[[^\]]+\]\([^)]+\)", content)
+    return bool(fenced_block or markdown_asset)
 
 
 def table_rows(section: str) -> list[list[str]]:
@@ -98,12 +101,17 @@ def technology_selection_metrics(text: str) -> tuple[float, bool]:
         len(row) >= 4 and row[1] == "不採用" and row[3] not in {"", "—", "-"}
         for row in rows
     )
+    no_alternative = (
+        "NOT_APPLICABLE" in labeled_content(section, "代替案の判定")
+        and bool(labeled_content(section, "代替案がない理由"))
+        and bool(labeled_content(section, "代替Evidence"))
+    )
     checks = [
         *label_checks,
         "選定理由" in section,
         "不採用理由" in section,
         adopted_row,
-        rejected_row,
+        rejected_row or no_alternative,
     ]
     coverage = sum(checks) / len(checks)
     return coverage, all(checks)
@@ -139,7 +147,7 @@ def actionable_troubleshooting_coverage(text: str) -> float:
         "再実行結果",
     ]
     evidence_checks = [
-        has_labeled_fenced_block(section, label) for label in evidence_labels
+        has_labeled_evidence(section, label) for label in evidence_labels
     ]
     checks = [*label_checks, *evidence_checks]
     return sum(checks) / len(checks)

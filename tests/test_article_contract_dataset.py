@@ -18,7 +18,7 @@ class ArticleContractDatasetTest(unittest.TestCase):
             for line in DATASET.read_text(encoding="utf-8").splitlines()
             if line.strip()
         ]
-        self.assertEqual(5, len(records))
+        self.assertEqual(7, len(records))
         for record in records:
             with self.subTest(case_id=record["case_id"]):
                 metrics = quality_contract_metrics(record["article"])
